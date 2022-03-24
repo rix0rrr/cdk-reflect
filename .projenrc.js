@@ -12,6 +12,7 @@ const project = new typescript.TypeScriptProject({
     'jsii-reflect',
     'fs-extra',
     'yargs',
+    '@jsii/spec',
   ],
   devDeps: [
     '@types/jest',
@@ -19,8 +20,9 @@ const project = new typescript.TypeScriptProject({
     'jest',
     '@types/fs-extra',
     'typescript',
+    'aws-cdk-lib',
+    'constructs',
   ],
-  projenUpgradeSecret: 'PROJEN_GITHUB_TOKEN',
   releaseToNpm: true,
   gitignore: ['*.js', '*.d.ts'],
 });
