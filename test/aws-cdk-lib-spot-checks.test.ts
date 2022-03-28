@@ -9,6 +9,7 @@ beforeAll(async () => {
     assemblyLocations: ['node_modules/aws-cdk-lib'],
   });
   await fs.writeJson('test.json', result.constructInfo, { spaces: 2 });
+  await fs.writeFile('warnings.txt', result.diagnostics.map(d => `- ${d.fqn}: ${d.message}`).join('\n'), { encoding: 'utf-8' });
 });
 
 test('check that some constructs are recognized', async () => {
@@ -51,7 +52,7 @@ test('detect enum class that returns explicit subclasses', () => {
   const fqn = 'aws-cdk-lib.aws_appmesh.TlsValidationTrust';
   expect(result.constructInfo.enumClasses[fqn]).toBeTruthy();
   expect(result.constructInfo.enumClasses[fqn].factories).toContainEqual(expect.objectContaining({
-    methodName: 'acm',
+    methodName: 'sds',
   }));
 });
 

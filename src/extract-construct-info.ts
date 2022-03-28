@@ -2,7 +2,7 @@ import * as spec from '@jsii/spec';
 import * as Case from 'case';
 import * as reflect from 'jsii-reflect';
 import { ConstructInfoModel, EnumClassFactory, EnumClassSingleton, IntegrationInfo, MetricInfo, ParameterValue, Type } from './info-model';
-import { failure, isFailure, isSuccess, liftObjR, liftR, mkdict, partition, reasons, Result, success, unwrapR } from './util';
+import { Failure, failure, isFailure, isSuccess, liftR, mkdict, partition, reasons, Result, success, unwrapR } from './util';
 
 export interface ExtractConstructInfoOptions {
   readonly assemblyLocations: string[];
@@ -54,6 +54,7 @@ class TypeSystemParser {
   }
 
   public parse() {
+    // Detect all types
     for (const enm of this.ts.enums) {
       this.tryEnum(enm);
     }
@@ -67,8 +68,11 @@ class TypeSystemParser {
       this.tryStruct(iface);
     }
 
-    // FIXME: at the end need to check all references to structs/enumclasses
-    // that might not have materialized.
+    // Do this until it doesn't change anymore
+    let change = this.removeNonconstructibleTypes();
+    while (change) {
+      change = this.removeNonconstructibleTypes();
+    }
   }
 
   private isConstruct(t: reflect.Type) {
@@ -283,9 +287,6 @@ class TypeSystemParser {
    *   - Doesn't have any static methods that aren't factory functions
    */
   private isEnumClass(klass: reflect.ClassType) {
-    if (klass.fqn === 'aws-cdk-lib.aws_apigateway.AwsIntegration') {
-      debugger;
-    }
     if (this.isConstruct(klass)) { return false; }
 
     const statics = klass.allMethods.filter(m => m.static);
@@ -310,29 +311,43 @@ class TypeSystemParser {
       ...extractDocs(p),
     }));
 
-    const ps = liftR(allProperties.map(p => liftObjR(p)));
 
-    if (!isSuccess(ps)) {
+    const requiredFails = new Array<Failure>();
+    const optionalFails = new Array<Failure>();
+    const convertibleProps = new Array<ParameterValue>();
+    for (const p of allProperties) {
+      if (isFailure(p.types)) {
+        (p.optional ? optionalFails : requiredFails).push(failure(`prop ${p.name}: ${p.types.reason}`));
+      } else {
+        convertibleProps.push({
+          name: p.name,
+          types: unwrapR(p.types),
+          optional: p.optional,
+          remarks: p.remarks,
+          summary: p.summary,
+        });
+      }
+    }
+
+    if (requiredFails.length > 0) {
       this.emitDiagnostic({
         fqn: struct.fqn,
-        message: `struct not instantiable: ${ps.reason}`,
+        message: `struct not instantiable: ${reasons(requiredFails)}`,
       });
       return;
     }
+    if (optionalFails.length > 0) {
+      this.emitDiagnostic({
+        fqn: struct.fqn,
+        message: `dropped optional props: ${reasons(optionalFails)}`,
+      });
 
-    // Index by name
-    const properties = mkdict(unwrapR(ps).map(p => [p.name, {
-      name: p.name,
-      types: p.types,
-      optional: p.optional,
-      remarks: p.remarks,
-      summary: p.summary,
-    } as ParameterValue]));
+    }
 
     this.constructInfo.structs[struct.fqn] = {
       fqn: struct.fqn,
       displayName: struct.name,
-      properties,
+      properties: mkdict(convertibleProps.map(p => [p.name, p])),
       ...extractDocs(struct),
     };
   }
@@ -367,12 +382,16 @@ class TypeSystemParser {
     // or it's an interface that extends IConstruct (and then we find the implementing
     // classes)
     if (this.isConstruct(complexType)) {
-      return complexType.allImplementations.map(k => success({ kind: 'construct', constructFqn: k.fqn }));
+      const impls = complexType.allImplementations.map(k => success({ kind: 'construct', constructFqn: k.fqn } as Type));
+      if (impls.length > 0) { return impls; }
+      return [failure(`no classes inherit from ${complexType.fqn}`)];
     }
     if (this.isConstructInterface(complexType)) {
-      return complexType.allImplementations
+      const impls = complexType.allImplementations
         .filter(k => this.isConstruct(k))
-        .map(k => success({ kind: 'construct', constructFqn: k.fqn }));
+        .map(k => success({ kind: 'construct', constructFqn: k.fqn } as Type));
+      if (impls.length > 0) { return impls; }
+      return [failure(`no classes implement ${complexType.fqn}`)];
     }
 
     if (complexType.isDataType()) {
@@ -392,6 +411,145 @@ class TypeSystemParser {
     }
 
     return [failure(`Cannot represent type ${typeRef}`)];
+  }
+
+  /**
+   * For all detected construct infos, check that all type references ended up materializing to actual types
+   *
+   * If not, scrap the top-level constructs again. Do this until nothing changes anymore.
+   *
+   * Return whether we removed something.
+   */
+  private removeNonconstructibleTypes(): boolean {
+    let removedType = false;
+    for (const [fqn, construct] of Object.entries(this.constructInfo.constructs)) {
+      const r = this.removeInvalidTypeRefs(construct.constructPropertyTypes);
+      if (!isFailure(r)) { continue; }
+
+      delete this.constructInfo.constructs[fqn];
+      removedType = true;
+      this.emitDiagnostic({ fqn, message: `dropped construct, not all types representable: ${r.reason}` });
+    }
+
+    for (const [fqn, struct] of Object.entries(this.constructInfo.structs)) {
+      for (const [propName, propValue] of Object.entries(struct.properties)) {
+        const r = this.removeInvalidTypeRefs(propValue.types);
+        if (!isFailure(r)) { continue; }
+
+        if (propValue.optional) {
+          delete struct.properties[propName];
+          this.emitDiagnostic({ fqn, message: `dropped optional property '${propName}': type not representable: ${r.reason}` });
+          continue;
+        }
+
+        delete this.constructInfo.structs[fqn];
+        removedType = true;
+        this.emitDiagnostic({ fqn, message: `dropped struct, not all required types representable: ${r.reason}` });
+      }
+    }
+
+    for (const [fqn, enumclass] of Object.entries(this.constructInfo.enumClasses)) {
+      const fails = new Array<Failure>();
+
+      const deletableFactories = new Set(enumclass.factories.flatMap(fac => {
+        // If this factory has any unrepresentable parameters, remove it
+        const paramFailures = fac.parameters.map(param => this.removeInvalidTypeRefs(param.types)).filter(isFailure);
+        if (paramFailures.length > 0) {
+          fails.push(failure(`unusable factory '${fac.methodName}': ${paramFailures.map(m => m.reason).join(', ')}`));
+          return [fac];
+        }
+        return [];
+      }));
+      deleteInPlace(enumclass.factories, deletableFactories);
+
+      if (enumclass.factories.length > 0 || enumclass.singletons.length > 0) {
+        if (fails.length > 0) {
+          this.emitDiagnostic({
+            fqn,
+            message: `problems with factories: ${fails.map(r => r.reason).join(', ')}`,
+          });
+        }
+        continue;
+      }
+
+      delete this.constructInfo.enumClasses[fqn];
+      removedType = true;
+      this.emitDiagnostic({
+        fqn,
+        message: `dropped unconstructible class: ${fails.map(r => r.reason).join(', ')}`,
+      });
+    }
+
+    for (const [key, integ] of Object.entries(this.constructInfo.integrations)) {
+      const fails = [
+        this.checkTypeRef({ kind: 'construct', constructFqn: integ.sourceConstructFqn }),
+        this.checkTypeRef({ kind: 'construct', constructFqn: integ.targetConstructFqn }),
+        this.removeInvalidTypeRefs(integ.integrationOptionsTypes),
+      ].filter(isFailure);
+
+      if (fails.length > 0) {
+        delete this.constructInfo.integrations[key];
+        removeValue(this.constructInfo.integrationsBySource, key);
+        removeValue(this.constructInfo.integrationsByTarget, key);
+
+        removedType = true;
+        this.emitDiagnostic({
+          fqn: integ.integrationFqn,
+          message: `dropped integration: ${fails.map(r => r.reason).join(', ')}`,
+        });
+      }
+    }
+
+    return removedType;
+  }
+
+  /**
+   * Filter a set of type-refs down in-place.
+   *
+   * - If the set ends up non-empty, emit diagnostics for the types we removed.
+   * - If the set ends up empty, don't emit diagnostics and return a failure for the types we removed.
+   */
+  private removeInvalidTypeRefs(xs: Type[] | undefined): Result<void> {
+    if (!xs) { return success(undefined); }
+
+    const fails = new Array<Failure>();
+    let i = 0;
+    while (i < xs.length) {
+      const result = this.checkTypeRef(xs[i]);
+      if (isFailure(result)) {
+        fails.push(result);
+        xs.splice(i, 1);
+      } else {
+        i += 1;
+      }
+    }
+
+    if (xs.length === 0) {
+      return failure(fails.map(f => f.reason).join(', '));
+    }
+
+    return success(undefined);
+  }
+
+  private checkTypeRef(x: Type): Result<void> {
+    switch (x.kind) {
+      case 'construct':
+        if (!this.constructInfo.constructs[x.constructFqn]) {
+          return failure(`construct was culled: ${x.constructFqn}`);
+        }
+        break;
+      case 'struct':
+        if (!this.constructInfo.structs[x.structFqn]) {
+          return failure(`struct was culled: ${x.structFqn}`);
+        }
+        break;
+      case 'enum-class':
+        if (!this.constructInfo.enumClasses[x.enumClassFqn]) {
+          return failure(`enum-class was culled: ${x.enumClassFqn}`);
+        }
+        break;
+    }
+    return success(undefined);
   }
 
   private emitDiagnostic(d: Diagnostic) {
@@ -480,4 +638,21 @@ function addToList<A>(xs: Record<string, A[]>, key: string, value: A) {
 
 function displayName(x: string) {
   return Case.pascal(x);
+}
+
+function deleteInPlace<A>(xs: A[], del: Set<A>) {
+  let i = 0;
+  while (i < xs.length) {
+    if (del.has(xs[i])) {
+      xs.splice(i, 1);
+    } else {
+      i += 1;
+    }
+  }
+}
+
+function removeValue(xs: Record<string, string[]>, value: string) {
+  for (const arr of Object.values(xs)) {
+    deleteInPlace(arr, new Set([value]));
+  }
 }

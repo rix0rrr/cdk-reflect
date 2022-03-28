@@ -17,7 +17,7 @@ export function isFailure<T>(x: Result<T>): x is Failure {
   return typeof x === 'object' && x && (x as any)[FAILSYM];
 }
 
-export function failure<T>(reason: string): Result<T> {
+export function failure(reason: string): Failure {
   return { [FAILSYM]: true, reason };
 }
 

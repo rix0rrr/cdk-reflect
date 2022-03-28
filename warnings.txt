@@ -1,0 +1,460 @@
+- aws-cdk-lib.aws_cloudwatch.Column: cannot instantiate class: Cannot represent type aws-cdk-lib.aws_cloudwatch.IWidget
+- aws-cdk-lib.aws_cloudwatch.Row: cannot instantiate class: Cannot represent type aws-cdk-lib.aws_cloudwatch.IWidget
+- aws-cdk-lib.cx_api.AssetManifestArtifact: potential enum-class not instantiable: cannot use factory fromManifest (Cannot represent type aws-cdk-lib.cx_api.CloudAssembly)
+- aws-cdk-lib.cx_api.CloudArtifact: potential enum-class not instantiable: cannot use factory fromManifest (Cannot represent type aws-cdk-lib.cx_api.CloudAssembly)
+- aws-cdk-lib.cx_api.CloudFormationStackArtifact: potential enum-class not instantiable: cannot use factory fromManifest (Cannot represent type aws-cdk-lib.cx_api.CloudAssembly)
+- aws-cdk-lib.cx_api.NestedCloudAssemblyArtifact: potential enum-class not instantiable: cannot use factory fromManifest (Cannot represent type aws-cdk-lib.cx_api.CloudAssembly)
+- aws-cdk-lib.cx_api.TreeCloudArtifact: potential enum-class not instantiable: cannot use factory fromManifest (Cannot represent type aws-cdk-lib.cx_api.CloudAssembly)
+- aws-cdk-lib.assertions.MatchCapture: struct not instantiable: prop capture: Cannot represent type aws-cdk-lib.assertions.Capture
+- aws-cdk-lib.assertions.MatchFailure: struct not instantiable: prop matcher: Cannot represent type aws-cdk-lib.assertions.Matcher
+- aws-cdk-lib.aws_apigateway.ApiKeyOptions: dropped optional props: prop defaultIntegration: Cannot represent type aws-cdk-lib.aws_apigateway.Integration
+- aws-cdk-lib.aws_apigateway.ApiKeyProps: dropped optional props: prop defaultIntegration: Cannot represent type aws-cdk-lib.aws_apigateway.Integration
+- aws-cdk-lib.aws_apigateway.LambdaRestApiProps: dropped optional props: prop defaultIntegration: Cannot represent type aws-cdk-lib.aws_apigateway.Integration
+- aws-cdk-lib.aws_apigateway.MethodOptions: dropped optional props: prop authorizer: Cannot represent type aws-cdk-lib.aws_apigateway.IAuthorizer,prop requestModels: Cannot represent type aws-cdk-lib.aws_apigateway.IModel
+- aws-cdk-lib.aws_apigateway.MethodProps: dropped optional props: prop integration: Cannot represent type aws-cdk-lib.aws_apigateway.Integration
+- aws-cdk-lib.aws_apigateway.MethodResponse: dropped optional props: prop responseModels: Cannot represent type aws-cdk-lib.aws_apigateway.IModel
+- aws-cdk-lib.aws_apigateway.ProxyResourceOptions: dropped optional props: prop defaultIntegration: Cannot represent type aws-cdk-lib.aws_apigateway.Integration
+- aws-cdk-lib.aws_apigateway.ProxyResourceProps: dropped optional props: prop defaultIntegration: Cannot represent type aws-cdk-lib.aws_apigateway.Integration
+- aws-cdk-lib.aws_apigateway.RateLimitedApiKeyProps: dropped optional props: prop defaultIntegration: Cannot represent type aws-cdk-lib.aws_apigateway.Integration
+- aws-cdk-lib.aws_apigateway.ResourceOptions: dropped optional props: prop defaultIntegration: Cannot represent type aws-cdk-lib.aws_apigateway.Integration
+- aws-cdk-lib.aws_apigateway.ResourceProps: dropped optional props: prop defaultIntegration: Cannot represent type aws-cdk-lib.aws_apigateway.Integration
+- aws-cdk-lib.aws_apigateway.RestApiProps: dropped optional props: prop defaultIntegration: Cannot represent type aws-cdk-lib.aws_apigateway.Integration
+- aws-cdk-lib.aws_apigateway.StageOptions: dropped optional props: prop accessLogDestination: Cannot represent type aws-cdk-lib.aws_apigateway.IAccessLogDestination
+- aws-cdk-lib.aws_apigateway.StageProps: dropped optional props: prop accessLogDestination: Cannot represent type aws-cdk-lib.aws_apigateway.IAccessLogDestination
+- aws-cdk-lib.aws_apigateway.StepFunctionsRestApiProps: dropped optional props: prop defaultIntegration: Cannot represent type aws-cdk-lib.aws_apigateway.Integration
+- aws-cdk-lib.aws_applicationautoscaling.BasicStepScalingPolicyProps: struct not instantiable: prop metric: Cannot represent type aws-cdk-lib.aws_cloudwatch.IMetric
+- aws-cdk-lib.aws_applicationautoscaling.BasicTargetTrackingScalingPolicyProps: dropped optional props: prop customMetric: Cannot represent type aws-cdk-lib.aws_cloudwatch.IMetric
+- aws-cdk-lib.aws_applicationautoscaling.StepScalingPolicyProps: struct not instantiable: prop metric: Cannot represent type aws-cdk-lib.aws_cloudwatch.IMetric
+- aws-cdk-lib.aws_applicationautoscaling.TargetTrackingScalingPolicyProps: dropped optional props: prop customMetric: Cannot represent type aws-cdk-lib.aws_cloudwatch.IMetric
+- aws-cdk-lib.aws_autoscaling.BasicLifecycleHookProps: dropped optional props: prop notificationTarget: Cannot represent type aws-cdk-lib.aws_autoscaling.ILifecycleHookTarget
+- aws-cdk-lib.aws_autoscaling.BasicStepScalingPolicyProps: struct not instantiable: prop metric: Cannot represent type aws-cdk-lib.aws_cloudwatch.IMetric
+- aws-cdk-lib.aws_autoscaling.BasicTargetTrackingScalingPolicyProps: dropped optional props: prop customMetric: Cannot represent type aws-cdk-lib.aws_cloudwatch.IMetric
+- aws-cdk-lib.aws_autoscaling.LifecycleHookProps: dropped optional props: prop notificationTarget: Cannot represent type aws-cdk-lib.aws_autoscaling.ILifecycleHookTarget
+- aws-cdk-lib.aws_autoscaling.MetricTargetTrackingProps: struct not instantiable: prop metric: Cannot represent type aws-cdk-lib.aws_cloudwatch.IMetric
+- aws-cdk-lib.aws_autoscaling.StepScalingPolicyProps: struct not instantiable: prop metric: Cannot represent type aws-cdk-lib.aws_cloudwatch.IMetric
+- aws-cdk-lib.aws_autoscaling.TargetTrackingScalingPolicyProps: dropped optional props: prop customMetric: Cannot represent type aws-cdk-lib.aws_cloudwatch.IMetric
+- aws-cdk-lib.aws_certificatemanager.PrivateCertificateProps: struct not instantiable: prop certificateAuthority: no classes implement aws-cdk-lib.aws_acmpca.ICertificateAuthority
+- aws-cdk-lib.aws_cloudfront.experimental.EdgeFunctionProps: dropped optional props: prop onFailure: Cannot represent type aws-cdk-lib.aws_lambda.IDestination,prop onSuccess: Cannot represent type aws-cdk-lib.aws_lambda.IDestination,prop events: Cannot represent type aws-cdk-lib.aws_lambda.IEventSource
+- aws-cdk-lib.aws_cloudfront.AddBehaviorOptions: dropped optional props: prop cachePolicy: Cannot represent type aws-cdk-lib.aws_cloudfront.ICachePolicy,prop originRequestPolicy: Cannot represent type aws-cdk-lib.aws_cloudfront.IOriginRequestPolicy,prop responseHeadersPolicy: Cannot represent type aws-cdk-lib.aws_cloudfront.IResponseHeadersPolicy
+- aws-cdk-lib.aws_cloudfront.BehaviorOptions: struct not instantiable: prop origin: Cannot represent type aws-cdk-lib.aws_cloudfront.IOrigin
+- aws-cdk-lib.aws_cloudfront.OriginFailoverConfig: struct not instantiable: prop failoverOrigin: Cannot represent type aws-cdk-lib.aws_cloudfront.IOrigin
+- aws-cdk-lib.aws_cloudfront_origins.OriginGroupProps: struct not instantiable: prop fallbackOrigin: Cannot represent type aws-cdk-lib.aws_cloudfront.IOrigin,prop primaryOrigin: Cannot represent type aws-cdk-lib.aws_cloudfront.IOrigin
+- aws-cdk-lib.aws_cloudwatch.AlarmProps: struct not instantiable: prop metric: Cannot represent type aws-cdk-lib.aws_cloudwatch.IMetric
+- aws-cdk-lib.aws_cloudwatch.CompositeAlarmProps: struct not instantiable: prop alarmRule: Cannot represent type aws-cdk-lib.aws_cloudwatch.IAlarmRule
+- aws-cdk-lib.aws_cloudwatch.DashboardProps: dropped optional props: prop widgets: Cannot represent type aws-cdk-lib.aws_cloudwatch.IWidget
+- aws-cdk-lib.aws_cloudwatch.GraphWidgetProps: dropped optional props: prop left: Cannot represent type aws-cdk-lib.aws_cloudwatch.IMetric,prop right: Cannot represent type aws-cdk-lib.aws_cloudwatch.IMetric
+- aws-cdk-lib.aws_cloudwatch.MathExpressionProps: dropped optional props: prop usingMetrics: Cannot represent type aws-cdk-lib.aws_cloudwatch.IMetric
+- aws-cdk-lib.aws_cloudwatch.MetricExpressionConfig: struct not instantiable: prop usingMetrics: Cannot represent type aws-cdk-lib.aws_cloudwatch.IMetric
+- aws-cdk-lib.aws_cloudwatch.SingleValueWidgetProps: struct not instantiable: prop metrics: Cannot represent type aws-cdk-lib.aws_cloudwatch.IMetric
+- aws-cdk-lib.aws_codebuild.CommonProjectProps: dropped optional props: prop fileSystemLocations: Cannot represent type aws-cdk-lib.aws_codebuild.IFileSystemLocation
+- aws-cdk-lib.aws_codebuild.PipelineProjectProps: dropped optional props: prop fileSystemLocations: Cannot represent type aws-cdk-lib.aws_codebuild.IFileSystemLocation
+- aws-cdk-lib.aws_codebuild.ProjectProps: dropped optional props: prop fileSystemLocations: Cannot represent type aws-cdk-lib.aws_codebuild.IFileSystemLocation
+- aws-cdk-lib.aws_codecommit.OnCommitOptions: dropped optional props: prop target: Cannot represent type aws-cdk-lib.aws_events.IRuleTarget
+- aws-cdk-lib.aws_codedeploy.EcsDeploymentGroupAttributes: dropped optional props: prop deploymentConfig: Cannot represent type aws-cdk-lib.aws_codedeploy.IEcsDeploymentConfig
+- aws-cdk-lib.aws_codedeploy.LambdaDeploymentGroupAttributes: dropped optional props: prop deploymentConfig: Cannot represent type aws-cdk-lib.aws_codedeploy.ILambdaDeploymentConfig
+- aws-cdk-lib.aws_codedeploy.LambdaDeploymentGroupProps: dropped optional props: prop deploymentConfig: Cannot represent type aws-cdk-lib.aws_codedeploy.ILambdaDeploymentConfig
+- aws-cdk-lib.aws_codedeploy.ServerDeploymentGroupAttributes: dropped optional props: prop deploymentConfig: Cannot represent type aws-cdk-lib.aws_codedeploy.IServerDeploymentConfig
+- aws-cdk-lib.aws_codedeploy.ServerDeploymentGroupProps: dropped optional props: prop deploymentConfig: Cannot represent type aws-cdk-lib.aws_codedeploy.IServerDeploymentConfig,prop ec2InstanceTags: Cannot represent type aws-cdk-lib.aws_codedeploy.InstanceTagSet,prop onPremiseInstanceTags: Cannot represent type aws-cdk-lib.aws_codedeploy.InstanceTagSet
+- aws-cdk-lib.aws_codepipeline.StageOptions: dropped optional props: prop actions: Cannot represent type aws-cdk-lib.aws_codepipeline.IAction
+- aws-cdk-lib.aws_codepipeline.StagePlacement: dropped optional props: prop justAfter: Cannot represent type aws-cdk-lib.aws_codepipeline.IStage,prop rightBefore: Cannot represent type aws-cdk-lib.aws_codepipeline.IStage
+- aws-cdk-lib.aws_codepipeline.StageProps: dropped optional props: prop actions: Cannot represent type aws-cdk-lib.aws_codepipeline.IAction
+- aws-cdk-lib.aws_codepipeline_actions.CodeDeployEcsDeployActionProps: struct not instantiable: prop deploymentGroup: no classes implement aws-cdk-lib.aws_codedeploy.IEcsDeploymentGroup
+- aws-cdk-lib.aws_codestarnotifications.NotificationRuleProps: struct not instantiable: prop source: Cannot represent type aws-cdk-lib.aws_codestarnotifications.INotificationRuleSource
+- aws-cdk-lib.aws_cognito.UserPoolClientOptions: dropped optional props: prop readAttributes: Cannot represent type aws-cdk-lib.aws_cognito.ClientAttributes,prop writeAttributes: Cannot represent type aws-cdk-lib.aws_cognito.ClientAttributes
+- aws-cdk-lib.aws_cognito.UserPoolClientProps: dropped optional props: prop readAttributes: Cannot represent type aws-cdk-lib.aws_cognito.ClientAttributes,prop writeAttributes: Cannot represent type aws-cdk-lib.aws_cognito.ClientAttributes
+- aws-cdk-lib.aws_cognito.UserPoolProps: dropped optional props: prop customAttributes: Cannot represent type aws-cdk-lib.aws_cognito.ICustomAttribute
+- aws-cdk-lib.aws_cognito.UserPoolResourceServerOptions: dropped optional props: prop scopes: Cannot represent type aws-cdk-lib.aws_cognito.ResourceServerScope
+- aws-cdk-lib.aws_cognito.UserPoolResourceServerProps: dropped optional props: prop scopes: Cannot represent type aws-cdk-lib.aws_cognito.ResourceServerScope
+- aws-cdk-lib.aws_ec2.ClientVpnEndpointOptions: dropped optional props: prop clientConnectionHandler: Cannot represent type aws-cdk-lib.aws_ec2.IClientVpnConnectionHandler
+- aws-cdk-lib.aws_ec2.ClientVpnEndpointProps: dropped optional props: prop clientConnectionHandler: Cannot represent type aws-cdk-lib.aws_ec2.IClientVpnConnectionHandler
+- aws-cdk-lib.aws_ec2.ConfigSetProps: struct not instantiable: prop configs: Cannot represent type aws-cdk-lib.aws_ec2.InitConfig
+- aws-cdk-lib.aws_ec2.ConnectionsProps: dropped optional props: prop peer: Cannot represent type aws-cdk-lib.aws_ec2.IPeer
+- aws-cdk-lib.aws_ec2.InitCommandOptions: dropped optional props: prop serviceRestartHandles: Cannot represent type aws-cdk-lib.aws_ec2.InitServiceRestartHandle
+- aws-cdk-lib.aws_ec2.InitFileAssetOptions: dropped optional props: prop serviceRestartHandles: Cannot represent type aws-cdk-lib.aws_ec2.InitServiceRestartHandle,prop readers: Cannot represent type aws-cdk-lib.aws_iam.IGrantable
+- aws-cdk-lib.aws_ec2.InitFileOptions: dropped optional props: prop serviceRestartHandles: Cannot represent type aws-cdk-lib.aws_ec2.InitServiceRestartHandle
+- aws-cdk-lib.aws_ec2.InitServiceOptions: dropped optional props: prop serviceRestartHandle: Cannot represent type aws-cdk-lib.aws_ec2.InitServiceRestartHandle
+- aws-cdk-lib.aws_ec2.InitSourceAssetOptions: dropped optional props: prop serviceRestartHandles: Cannot represent type aws-cdk-lib.aws_ec2.InitServiceRestartHandle,prop readers: Cannot represent type aws-cdk-lib.aws_iam.IGrantable
+- aws-cdk-lib.aws_ec2.InitSourceOptions: dropped optional props: prop serviceRestartHandles: Cannot represent type aws-cdk-lib.aws_ec2.InitServiceRestartHandle
+- aws-cdk-lib.aws_ec2.LocationPackageOptions: dropped optional props: prop serviceRestartHandles: Cannot represent type aws-cdk-lib.aws_ec2.InitServiceRestartHandle
+- aws-cdk-lib.aws_ec2.NamedPackageOptions: dropped optional props: prop serviceRestartHandles: Cannot represent type aws-cdk-lib.aws_ec2.InitServiceRestartHandle
+- aws-cdk-lib.aws_ec2.VpcEndpointServiceProps: struct not instantiable: prop vpcEndpointServiceLoadBalancers: Cannot represent type aws-cdk-lib.aws_ec2.IVpcEndpointServiceLoadBalancer
+- aws-cdk-lib.aws_ecr.OnCloudTrailImagePushedOptions: dropped optional props: prop target: Cannot represent type aws-cdk-lib.aws_events.IRuleTarget
+- aws-cdk-lib.aws_ecr.OnImageScanCompletedOptions: dropped optional props: prop target: Cannot represent type aws-cdk-lib.aws_events.IRuleTarget
+- aws-cdk-lib.aws_ecs.CommonTaskDefinitionProps: dropped optional props: prop proxyConfiguration: Cannot represent type aws-cdk-lib.aws_ecs.ProxyConfiguration
+- aws-cdk-lib.aws_ecs.Ec2TaskDefinitionProps: dropped optional props: prop proxyConfiguration: Cannot represent type aws-cdk-lib.aws_ecs.ProxyConfiguration
+- aws-cdk-lib.aws_ecs.ExternalTaskDefinitionProps: dropped optional props: prop proxyConfiguration: Cannot represent type aws-cdk-lib.aws_ecs.ProxyConfiguration
+- aws-cdk-lib.aws_ecs.FargateTaskDefinitionProps: dropped optional props: prop proxyConfiguration: Cannot represent type aws-cdk-lib.aws_ecs.ProxyConfiguration
+- aws-cdk-lib.aws_ecs.TaskDefinitionProps: dropped optional props: prop proxyConfiguration: Cannot represent type aws-cdk-lib.aws_ecs.ProxyConfiguration
+- aws-cdk-lib.aws_ecs.TrackCustomMetricProps: struct not instantiable: prop metric: Cannot represent type aws-cdk-lib.aws_cloudwatch.IMetric
+- aws-cdk-lib.aws_elasticloadbalancing.LoadBalancerProps: dropped optional props: prop targets: Cannot represent type aws-cdk-lib.aws_elasticloadbalancing.ILoadBalancerTarget
+- aws-cdk-lib.aws_elasticloadbalancingv2.AddApplicationTargetsProps: dropped optional props: prop targets: Cannot represent type aws-cdk-lib.aws_elasticloadbalancingv2.IApplicationLoadBalancerTarget
+- aws-cdk-lib.aws_elasticloadbalancingv2.AddNetworkTargetsProps: dropped optional props: prop targets: Cannot represent type aws-cdk-lib.aws_elasticloadbalancingv2.INetworkLoadBalancerTarget
+- aws-cdk-lib.aws_elasticloadbalancingv2.ApplicationTargetGroupProps: dropped optional props: prop targets: Cannot represent type aws-cdk-lib.aws_elasticloadbalancingv2.IApplicationLoadBalancerTarget
+- aws-cdk-lib.aws_elasticloadbalancingv2.NetworkTargetGroupProps: dropped optional props: prop targets: Cannot represent type aws-cdk-lib.aws_elasticloadbalancingv2.INetworkLoadBalancerTarget
+- aws-cdk-lib.aws_events.OnEventOptions: dropped optional props: prop target: Cannot represent type aws-cdk-lib.aws_events.IRuleTarget
+- aws-cdk-lib.aws_events.RuleProps: dropped optional props: prop targets: Cannot represent type aws-cdk-lib.aws_events.IRuleTarget
+- aws-cdk-lib.aws_fsx.LustreConfiguration: dropped optional props: prop weeklyMaintenanceStartTime: Cannot represent type aws-cdk-lib.aws_fsx.LustreMaintenanceTime
+- aws-cdk-lib.aws_globalaccelerator.EndpointGroupOptions: dropped optional props: prop endpoints: Cannot represent type aws-cdk-lib.aws_globalaccelerator.IEndpoint
+- aws-cdk-lib.aws_globalaccelerator.EndpointGroupProps: dropped optional props: prop endpoints: Cannot represent type aws-cdk-lib.aws_globalaccelerator.IEndpoint
+- aws-cdk-lib.aws_iam.CommonGrantOptions: struct not instantiable: prop grantee: Cannot represent type aws-cdk-lib.aws_iam.IGrantable
+- aws-cdk-lib.aws_iam.GrantOnPrincipalAndResourceOptions: struct not instantiable: prop grantee: Cannot represent type aws-cdk-lib.aws_iam.IGrantable
+- aws-cdk-lib.aws_iam.GrantOnPrincipalOptions: struct not instantiable: prop grantee: Cannot represent type aws-cdk-lib.aws_iam.IGrantable
+- aws-cdk-lib.aws_iam.GrantWithResourceOptions: struct not instantiable: prop grantee: Cannot represent type aws-cdk-lib.aws_iam.IGrantable
+- aws-cdk-lib.aws_iam.GroupProps: dropped optional props: prop managedPolicies: Cannot represent type aws-cdk-lib.aws_iam.IManagedPolicy
+- aws-cdk-lib.aws_iam.LazyRoleProps: struct not instantiable: prop assumedBy: Cannot represent type aws-cdk-lib.aws_iam.IPrincipal
+- aws-cdk-lib.aws_iam.PolicyStatementProps: dropped optional props: prop notPrincipals: Cannot represent type aws-cdk-lib.aws_iam.IPrincipal,prop principals: Cannot represent type aws-cdk-lib.aws_iam.IPrincipal
+- aws-cdk-lib.aws_iam.RoleProps: struct not instantiable: prop assumedBy: Cannot represent type aws-cdk-lib.aws_iam.IPrincipal
+- aws-cdk-lib.aws_iam.UserProps: dropped optional props: prop managedPolicies: Cannot represent type aws-cdk-lib.aws_iam.IManagedPolicy,prop permissionsBoundary: Cannot represent type aws-cdk-lib.aws_iam.IManagedPolicy
+- aws-cdk-lib.aws_kms.KeyProps: dropped optional props: prop admins: Cannot represent type aws-cdk-lib.aws_iam.IPrincipal
+- aws-cdk-lib.aws_lambda.AliasOptions: dropped optional props: prop onFailure: Cannot represent type aws-cdk-lib.aws_lambda.IDestination,prop onSuccess: Cannot represent type aws-cdk-lib.aws_lambda.IDestination
+- aws-cdk-lib.aws_lambda.AliasProps: dropped optional props: prop onFailure: Cannot represent type aws-cdk-lib.aws_lambda.IDestination,prop onSuccess: Cannot represent type aws-cdk-lib.aws_lambda.IDestination
+- aws-cdk-lib.aws_lambda.DockerImageFunctionProps: dropped optional props: prop onFailure: Cannot represent type aws-cdk-lib.aws_lambda.IDestination,prop onSuccess: Cannot represent type aws-cdk-lib.aws_lambda.IDestination,prop events: Cannot represent type aws-cdk-lib.aws_lambda.IEventSource
+- aws-cdk-lib.aws_lambda.EventInvokeConfigOptions: dropped optional props: prop onFailure: Cannot represent type aws-cdk-lib.aws_lambda.IDestination,prop onSuccess: Cannot represent type aws-cdk-lib.aws_lambda.IDestination
+- aws-cdk-lib.aws_lambda.EventInvokeConfigProps: dropped optional props: prop onFailure: Cannot represent type aws-cdk-lib.aws_lambda.IDestination,prop onSuccess: Cannot represent type aws-cdk-lib.aws_lambda.IDestination
+- aws-cdk-lib.aws_lambda.EventSourceMappingOptions: dropped optional props: prop onFailure: Cannot represent type aws-cdk-lib.aws_lambda.IEventSourceDlq
+- aws-cdk-lib.aws_lambda.EventSourceMappingProps: dropped optional props: prop onFailure: Cannot represent type aws-cdk-lib.aws_lambda.IEventSourceDlq
+- aws-cdk-lib.aws_lambda.FileSystemConfig: dropped optional props: prop connections: Cannot represent type aws-cdk-lib.aws_ec2.Connections
+- aws-cdk-lib.aws_lambda.FunctionOptions: dropped optional props: prop onFailure: Cannot represent type aws-cdk-lib.aws_lambda.IDestination,prop onSuccess: Cannot represent type aws-cdk-lib.aws_lambda.IDestination,prop events: Cannot represent type aws-cdk-lib.aws_lambda.IEventSource
+- aws-cdk-lib.aws_lambda.FunctionProps: dropped optional props: prop onFailure: Cannot represent type aws-cdk-lib.aws_lambda.IDestination,prop onSuccess: Cannot represent type aws-cdk-lib.aws_lambda.IDestination,prop events: Cannot represent type aws-cdk-lib.aws_lambda.IEventSource
+- aws-cdk-lib.aws_lambda.Permission: struct not instantiable: prop principal: Cannot represent type aws-cdk-lib.aws_iam.IPrincipal
+- aws-cdk-lib.aws_lambda.SingletonFunctionProps: dropped optional props: prop onFailure: Cannot represent type aws-cdk-lib.aws_lambda.IDestination,prop onSuccess: Cannot represent type aws-cdk-lib.aws_lambda.IDestination,prop events: Cannot represent type aws-cdk-lib.aws_lambda.IEventSource
+- aws-cdk-lib.aws_lambda.VersionOptions: dropped optional props: prop onFailure: Cannot represent type aws-cdk-lib.aws_lambda.IDestination,prop onSuccess: Cannot represent type aws-cdk-lib.aws_lambda.IDestination
+- aws-cdk-lib.aws_lambda.VersionProps: dropped optional props: prop onFailure: Cannot represent type aws-cdk-lib.aws_lambda.IDestination,prop onSuccess: Cannot represent type aws-cdk-lib.aws_lambda.IDestination
+- aws-cdk-lib.aws_lambda_event_sources.BaseStreamEventSourceProps: dropped optional props: prop onFailure: Cannot represent type aws-cdk-lib.aws_lambda.IEventSourceDlq
+- aws-cdk-lib.aws_lambda_event_sources.DynamoEventSourceProps: dropped optional props: prop onFailure: Cannot represent type aws-cdk-lib.aws_lambda.IEventSourceDlq
+- aws-cdk-lib.aws_lambda_event_sources.KafkaEventSourceProps: dropped optional props: prop onFailure: Cannot represent type aws-cdk-lib.aws_lambda.IEventSourceDlq
+- aws-cdk-lib.aws_lambda_event_sources.KinesisEventSourceProps: dropped optional props: prop onFailure: Cannot represent type aws-cdk-lib.aws_lambda.IEventSourceDlq
+- aws-cdk-lib.aws_lambda_event_sources.ManagedKafkaEventSourceProps: dropped optional props: prop onFailure: Cannot represent type aws-cdk-lib.aws_lambda.IEventSourceDlq
+- aws-cdk-lib.aws_lambda_event_sources.SelfManagedKafkaEventSourceProps: dropped optional props: prop onFailure: Cannot represent type aws-cdk-lib.aws_lambda.IEventSourceDlq
+- aws-cdk-lib.aws_lambda_event_sources.StreamEventSourceProps: dropped optional props: prop onFailure: Cannot represent type aws-cdk-lib.aws_lambda.IEventSourceDlq
+- aws-cdk-lib.aws_lambda_nodejs.BundlingOptions: dropped optional props: prop commandHooks: Cannot represent type aws-cdk-lib.aws_lambda_nodejs.ICommandHooks
+- aws-cdk-lib.aws_lambda_nodejs.NodejsFunctionProps: dropped optional props: prop onFailure: Cannot represent type aws-cdk-lib.aws_lambda.IDestination,prop onSuccess: Cannot represent type aws-cdk-lib.aws_lambda.IDestination,prop events: Cannot represent type aws-cdk-lib.aws_lambda.IEventSource
+- aws-cdk-lib.aws_logs.SubscriptionFilterOptions: struct not instantiable: prop destination: Cannot represent type aws-cdk-lib.aws_logs.ILogSubscriptionDestination
+- aws-cdk-lib.aws_logs.SubscriptionFilterProps: struct not instantiable: prop destination: Cannot represent type aws-cdk-lib.aws_logs.ILogSubscriptionDestination
+- aws-cdk-lib.aws_rds.DatabaseClusterAttributes: dropped optional props: prop engine: Cannot represent type aws-cdk-lib.aws_rds.IClusterEngine
+- aws-cdk-lib.aws_rds.DatabaseClusterFromSnapshotProps: struct not instantiable: prop engine: Cannot represent type aws-cdk-lib.aws_rds.IClusterEngine
+- aws-cdk-lib.aws_rds.DatabaseClusterProps: struct not instantiable: prop engine: Cannot represent type aws-cdk-lib.aws_rds.IClusterEngine
+- aws-cdk-lib.aws_rds.DatabaseInstanceAttributes: dropped optional props: prop engine: Cannot represent type aws-cdk-lib.aws_rds.IInstanceEngine
+- aws-cdk-lib.aws_rds.DatabaseInstanceFromSnapshotProps: struct not instantiable: prop engine: Cannot represent type aws-cdk-lib.aws_rds.IInstanceEngine
+- aws-cdk-lib.aws_rds.DatabaseInstanceProps: struct not instantiable: prop engine: Cannot represent type aws-cdk-lib.aws_rds.IInstanceEngine
+- aws-cdk-lib.aws_rds.DatabaseInstanceSourceProps: struct not instantiable: prop engine: Cannot represent type aws-cdk-lib.aws_rds.IInstanceEngine
+- aws-cdk-lib.aws_rds.OptionGroupProps: struct not instantiable: prop engine: Cannot represent type aws-cdk-lib.aws_rds.IInstanceEngine
+- aws-cdk-lib.aws_rds.ParameterGroupProps: struct not instantiable: prop engine: Cannot represent type aws-cdk-lib.aws_rds.IEngine
+- aws-cdk-lib.aws_rds.ServerlessClusterFromSnapshotProps: struct not instantiable: prop engine: Cannot represent type aws-cdk-lib.aws_rds.IClusterEngine
+- aws-cdk-lib.aws_rds.ServerlessClusterProps: struct not instantiable: prop engine: Cannot represent type aws-cdk-lib.aws_rds.IClusterEngine
+- aws-cdk-lib.aws_route53.PublicHostedZoneProps: dropped optional props: prop crossAccountZoneDelegationPrincipal: Cannot represent type aws-cdk-lib.aws_iam.IPrincipal
+- aws-cdk-lib.aws_s3.OnCloudTrailBucketEventOptions: dropped optional props: prop target: Cannot represent type aws-cdk-lib.aws_events.IRuleTarget
+- aws-cdk-lib.aws_s3_assets.AssetOptions: dropped optional props: prop readers: Cannot represent type aws-cdk-lib.aws_iam.IGrantable
+- aws-cdk-lib.aws_s3_assets.AssetProps: dropped optional props: prop readers: Cannot represent type aws-cdk-lib.aws_iam.IGrantable
+- aws-cdk-lib.aws_s3_deployment.BucketDeploymentProps: struct not instantiable: prop sources: Cannot represent type aws-cdk-lib.aws_s3_deployment.ISource
+- aws-cdk-lib.aws_secretsmanager.AttachedSecretOptions: struct not instantiable: prop target: Cannot represent type aws-cdk-lib.aws_secretsmanager.ISecretAttachmentTarget
+- aws-cdk-lib.aws_secretsmanager.SecretTargetAttachmentProps: struct not instantiable: prop target: Cannot represent type aws-cdk-lib.aws_secretsmanager.ISecretAttachmentTarget
+- aws-cdk-lib.aws_ses.DropSpamReceiptRuleProps: dropped optional props: prop actions: Cannot represent type aws-cdk-lib.aws_ses.IReceiptRuleAction
+- aws-cdk-lib.aws_ses.ReceiptRuleOptions: dropped optional props: prop actions: Cannot represent type aws-cdk-lib.aws_ses.IReceiptRuleAction
+- aws-cdk-lib.aws_ses.ReceiptRuleProps: dropped optional props: prop actions: Cannot represent type aws-cdk-lib.aws_ses.IReceiptRuleAction
+- aws-cdk-lib.aws_stepfunctions_tasks.DynamoGetItemProps: dropped optional props: prop projectionExpression: Cannot represent type aws-cdk-lib.aws_stepfunctions_tasks.DynamoProjectionExpression
+- aws-cdk-lib.aws_stepfunctions_tasks.EcsRunTaskProps: struct not instantiable: prop launchTarget: Cannot represent type aws-cdk-lib.aws_stepfunctions_tasks.IEcsLaunchTarget
+- aws-cdk-lib.aws_stepfunctions_tasks.SageMakerCreateModelProps: struct not instantiable: prop primaryContainer: Cannot represent type aws-cdk-lib.aws_stepfunctions_tasks.IContainerDefinition
+- aws-cdk-lib.cx_api.CloudAssemblyBuilderProps: dropped optional props: prop parentBuilder: Cannot represent type aws-cdk-lib.cx_api.CloudAssemblyBuilder
+- aws-cdk-lib.pipelines.AddStageOpts: dropped optional props: prop post: Cannot represent type aws-cdk-lib.pipelines.Step,prop pre: Cannot represent type aws-cdk-lib.pipelines.Step
+- aws-cdk-lib.pipelines.FileSetLocation: struct not instantiable: prop fileSet: Cannot represent type aws-cdk-lib.pipelines.FileSet
+- aws-cdk-lib.pipelines.ProduceActionOptions: struct not instantiable: prop artifacts: Cannot represent type aws-cdk-lib.pipelines.ArtifactMap
+- aws-cdk-lib.pipelines.StackSteps: dropped optional props: prop changeSet: Cannot represent type aws-cdk-lib.pipelines.Step,prop post: Cannot represent type aws-cdk-lib.pipelines.Step,prop pre: Cannot represent type aws-cdk-lib.pipelines.Step
+- aws-cdk-lib.pipelines.StageDeploymentProps: dropped optional props: prop post: Cannot represent type aws-cdk-lib.pipelines.Step,prop pre: Cannot represent type aws-cdk-lib.pipelines.Step
+- aws-cdk-lib.pipelines.WaveOptions: dropped optional props: prop post: Cannot represent type aws-cdk-lib.pipelines.Step,prop pre: Cannot represent type aws-cdk-lib.pipelines.Step
+- aws-cdk-lib.pipelines.WaveProps: dropped optional props: prop post: Cannot represent type aws-cdk-lib.pipelines.Step,prop pre: Cannot represent type aws-cdk-lib.pipelines.Step
+- aws-cdk-lib.triggers.TriggerFunctionProps: dropped optional props: prop onFailure: Cannot represent type aws-cdk-lib.aws_lambda.IDestination,prop onSuccess: Cannot represent type aws-cdk-lib.aws_lambda.IDestination,prop events: Cannot represent type aws-cdk-lib.aws_lambda.IEventSource
+- aws-cdk-lib.BundlingOptions: dropped optional props: prop local: Cannot represent type aws-cdk-lib.ILocalBundling
+- aws-cdk-lib.CfnConditionProps: dropped optional props: prop expression: Cannot represent type aws-cdk-lib.ICfnConditionExpression
+- aws-cdk-lib.CfnRuleAssertion: struct not instantiable: prop assert: Cannot represent type aws-cdk-lib.ICfnConditionExpression
+- aws-cdk-lib.CfnRuleProps: dropped optional props: prop ruleCondition: Cannot represent type aws-cdk-lib.ICfnConditionExpression
+- aws-cdk-lib.ResolveOptions: struct not instantiable: prop resolver: Cannot represent type aws-cdk-lib.ITokenResolver
+- aws-cdk-lib.StackProps: dropped optional props: prop synthesizer: Cannot represent type aws-cdk-lib.IStackSynthesizer
+- aws-cdk-lib.aws_applicationautoscaling.StepScalingPolicy: dropped construct, not all types representable: struct was culled: aws-cdk-lib.aws_applicationautoscaling.StepScalingPolicyProps
+- aws-cdk-lib.aws_autoscaling.StepScalingPolicy: dropped construct, not all types representable: struct was culled: aws-cdk-lib.aws_autoscaling.StepScalingPolicyProps
+- aws-cdk-lib.aws_certificatemanager.PrivateCertificate: dropped construct, not all types representable: struct was culled: aws-cdk-lib.aws_certificatemanager.PrivateCertificateProps
+- aws-cdk-lib.aws_cloudformation.CfnWaitConditionHandle: dropped construct, not all types representable: 
+- aws-cdk-lib.aws_cloudwatch.Alarm: dropped construct, not all types representable: struct was culled: aws-cdk-lib.aws_cloudwatch.AlarmProps
+- aws-cdk-lib.aws_cloudwatch.CompositeAlarm: dropped construct, not all types representable: struct was culled: aws-cdk-lib.aws_cloudwatch.CompositeAlarmProps
+- aws-cdk-lib.aws_codestarnotifications.NotificationRule: dropped construct, not all types representable: struct was culled: aws-cdk-lib.aws_codestarnotifications.NotificationRuleProps
+- aws-cdk-lib.aws_ec2.VpcEndpointService: dropped construct, not all types representable: struct was culled: aws-cdk-lib.aws_ec2.VpcEndpointServiceProps
+- aws-cdk-lib.aws_iam.LazyRole: dropped construct, not all types representable: struct was culled: aws-cdk-lib.aws_iam.LazyRoleProps
+- aws-cdk-lib.aws_iam.Role: dropped construct, not all types representable: struct was culled: aws-cdk-lib.aws_iam.RoleProps
+- aws-cdk-lib.aws_logs.SubscriptionFilter: dropped construct, not all types representable: struct was culled: aws-cdk-lib.aws_logs.SubscriptionFilterProps
+- aws-cdk-lib.aws_rds.DatabaseCluster: dropped construct, not all types representable: struct was culled: aws-cdk-lib.aws_rds.DatabaseClusterProps
+- aws-cdk-lib.aws_rds.DatabaseClusterFromSnapshot: dropped construct, not all types representable: struct was culled: aws-cdk-lib.aws_rds.DatabaseClusterFromSnapshotProps
+- aws-cdk-lib.aws_rds.DatabaseInstance: dropped construct, not all types representable: struct was culled: aws-cdk-lib.aws_rds.DatabaseInstanceProps
+- aws-cdk-lib.aws_rds.DatabaseInstanceFromSnapshot: dropped construct, not all types representable: struct was culled: aws-cdk-lib.aws_rds.DatabaseInstanceFromSnapshotProps
+- aws-cdk-lib.aws_rds.OptionGroup: dropped construct, not all types representable: struct was culled: aws-cdk-lib.aws_rds.OptionGroupProps
+- aws-cdk-lib.aws_rds.ParameterGroup: dropped construct, not all types representable: struct was culled: aws-cdk-lib.aws_rds.ParameterGroupProps
+- aws-cdk-lib.aws_rds.ServerlessCluster: dropped construct, not all types representable: struct was culled: aws-cdk-lib.aws_rds.ServerlessClusterProps
+- aws-cdk-lib.aws_rds.ServerlessClusterFromSnapshot: dropped construct, not all types representable: struct was culled: aws-cdk-lib.aws_rds.ServerlessClusterFromSnapshotProps
+- aws-cdk-lib.aws_s3_deployment.BucketDeployment: dropped construct, not all types representable: struct was culled: aws-cdk-lib.aws_s3_deployment.BucketDeploymentProps
+- aws-cdk-lib.aws_secretsmanager.SecretTargetAttachment: dropped construct, not all types representable: struct was culled: aws-cdk-lib.aws_secretsmanager.SecretTargetAttachmentProps
+- aws-cdk-lib.aws_stepfunctions_tasks.EcsRunTask: dropped construct, not all types representable: struct was culled: aws-cdk-lib.aws_stepfunctions_tasks.EcsRunTaskProps
+- aws-cdk-lib.aws_stepfunctions_tasks.SageMakerCreateModel: dropped construct, not all types representable: struct was culled: aws-cdk-lib.aws_stepfunctions_tasks.SageMakerCreateModelProps
+- aws-cdk-lib.lambda_layer_awscli.AwsCliLayer: dropped construct, not all types representable: 
+- aws-cdk-lib.lambda_layer_kubectl.KubectlLayer: dropped construct, not all types representable: 
+- aws-cdk-lib.lambda_layer_node_proxy_agent.NodeProxyAgentLayer: dropped construct, not all types representable: 
+- aws-cdk-lib.App: dropped construct, not all types representable: 
+- aws-cdk-lib.CfnWaitConditionHandle: dropped construct, not all types representable: 
+- constructs.Construct: dropped construct, not all types representable: 
+- aws-cdk-lib.aws_apigateway.IntegrationOptions: dropped optional property 'credentialsRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_apigateway.LambdaAuthorizerProps: dropped optional property 'assumeRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_apigateway.LambdaIntegrationOptions: dropped optional property 'credentialsRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_apigateway.RequestAuthorizerProps: dropped optional property 'assumeRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_apigateway.StepFunctionsExecutionIntegrationOptions: dropped optional property 'credentialsRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_apigateway.TokenAuthorizerProps: dropped optional property 'assumeRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_applicationautoscaling.BaseScalableAttributeProps: dropped struct, not all required types representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_applicationautoscaling.ScalableTargetProps: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_autoscaling.AutoScalingGroupProps: dropped struct, not all required types representable: enum-class was culled: aws-cdk-lib.aws_ec2.IMachineImage
+- aws-cdk-lib.aws_autoscaling.AutoScalingGroupProps: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_autoscaling.BasicLifecycleHookProps: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_autoscaling.BindHookTargetOptions: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_autoscaling.LifecycleHookProps: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_autoscaling.LifecycleHookTargetConfig: dropped struct, not all required types representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_backup.BackupSelectionOptions: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_backup.BackupSelectionProps: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_certificatemanager.DnsValidatedCertificateProps: dropped optional property 'customResourceRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_chatbot.SlackChannelConfigurationProps: dropped optional property 'logRetentionRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_chatbot.SlackChannelConfigurationProps: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_cloudfront.experimental.EdgeFunctionProps: dropped optional property 'logRetentionRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_cloudfront.experimental.EdgeFunctionProps: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_cloudfront.DistributionProps: dropped struct, not all required types representable: struct was culled: aws-cdk-lib.aws_cloudfront.BehaviorOptions
+- aws-cdk-lib.aws_cloudfront.OriginBindConfig: dropped optional property 'failoverConfig': type not representable: struct was culled: aws-cdk-lib.aws_cloudfront.OriginFailoverConfig
+- aws-cdk-lib.aws_cloudwatch.AlarmWidgetProps: dropped struct, not all required types representable: construct was culled: aws-cdk-lib.aws_cloudwatch.Alarm, construct was culled: aws-cdk-lib.aws_cloudwatch.CompositeAlarm
+- aws-cdk-lib.aws_cloudwatch.MetricConfig: dropped optional property 'mathExpression': type not representable: struct was culled: aws-cdk-lib.aws_cloudwatch.MetricExpressionConfig
+- aws-cdk-lib.aws_codebuild.BatchBuildConfig: dropped struct, not all required types representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_codebuild.BuildEnvironment: dropped optional property 'buildImage': type not representable: enum-class was culled: aws-cdk-lib.aws_codebuild.IBuildImage
+- aws-cdk-lib.aws_codebuild.CommonProjectProps: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_codebuild.PipelineProjectProps: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_codebuild.ProjectProps: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_codebuild.ProjectProps: dropped optional property 'artifacts': type not representable: enum-class was culled: aws-cdk-lib.aws_codebuild.IArtifacts
+- aws-cdk-lib.aws_codebuild.ProjectProps: dropped optional property 'source': type not representable: enum-class was culled: aws-cdk-lib.aws_codebuild.ISource
+- aws-cdk-lib.aws_codedeploy.LambdaDeploymentGroupProps: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_codedeploy.ServerDeploymentGroupProps: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_codepipeline.ActionBindOptions: dropped struct, not all required types representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_codepipeline.ActionProperties: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_codepipeline.CommonAwsActionProps: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_codepipeline.PipelineProps: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_codepipeline_actions.CloudFormationCreateReplaceChangeSetActionProps: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_codepipeline_actions.CloudFormationCreateReplaceChangeSetActionProps: dropped optional property 'deploymentRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_codepipeline_actions.CloudFormationCreateUpdateStackActionProps: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_codepipeline_actions.CloudFormationCreateUpdateStackActionProps: dropped optional property 'deploymentRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_codepipeline_actions.CloudFormationDeleteStackActionProps: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_codepipeline_actions.CloudFormationDeleteStackActionProps: dropped optional property 'deploymentRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_codepipeline_actions.CloudFormationDeployStackInstancesActionProps: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_codepipeline_actions.CloudFormationDeployStackSetActionProps: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_codepipeline_actions.CloudFormationExecuteChangeSetActionProps: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_codepipeline_actions.CodeBuildActionProps: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_codepipeline_actions.CodeCommitSourceActionProps: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_codepipeline_actions.CodeCommitSourceActionProps: dropped optional property 'eventRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_codepipeline_actions.CodeDeployServerDeployActionProps: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_codepipeline_actions.CodeStarConnectionsSourceActionProps: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_codepipeline_actions.EcrSourceActionProps: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_codepipeline_actions.EcsDeployActionProps: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_codepipeline_actions.LambdaInvokeActionProps: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_codepipeline_actions.ManualApprovalActionProps: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_codepipeline_actions.S3DeployActionProps: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_codepipeline_actions.S3SourceActionProps: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_codepipeline_actions.SelfManagedDeploymentProps: dropped optional property 'administrationRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_codepipeline_actions.ServiceCatalogDeployActionBeta1Props: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_codepipeline_actions.StepFunctionsInvokeActionProps: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_cognito.UserPoolProps: dropped optional property 'smsRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_config.CloudFormationStackDriftDetectionCheckProps: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_docdb.DatabaseClusterProps: dropped optional property 'cloudWatchLogsRetentionRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_ec2.AttachInitOptions: dropped struct, not all required types representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_ec2.BastionHostLinuxProps: dropped optional property 'machineImage': type not representable: enum-class was culled: aws-cdk-lib.aws_ec2.IMachineImage
+- aws-cdk-lib.aws_ec2.FlowLogDestinationConfig: dropped optional property 'iamRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_ec2.GatewayVpcEndpointOptions: dropped struct, not all required types representable: enum-class was culled: aws-cdk-lib.aws_ec2.IGatewayVpcEndpointService
+- aws-cdk-lib.aws_ec2.GatewayVpcEndpointProps: dropped struct, not all required types representable: enum-class was culled: aws-cdk-lib.aws_ec2.IGatewayVpcEndpointService
+- aws-cdk-lib.aws_ec2.InstanceProps: dropped struct, not all required types representable: enum-class was culled: aws-cdk-lib.aws_ec2.IMachineImage
+- aws-cdk-lib.aws_ec2.InstanceProps: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_ec2.InterfaceVpcEndpointOptions: dropped struct, not all required types representable: enum-class was culled: aws-cdk-lib.aws_ec2.IInterfaceVpcEndpointService
+- aws-cdk-lib.aws_ec2.InterfaceVpcEndpointProps: dropped struct, not all required types representable: enum-class was culled: aws-cdk-lib.aws_ec2.IInterfaceVpcEndpointService
+- aws-cdk-lib.aws_ec2.LaunchTemplateProps: dropped optional property 'machineImage': type not representable: enum-class was culled: aws-cdk-lib.aws_ec2.IMachineImage
+- aws-cdk-lib.aws_ec2.LaunchTemplateProps: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_ec2.NatInstanceProps: dropped optional property 'machineImage': type not representable: enum-class was culled: aws-cdk-lib.aws_ec2.IMachineImage
+- aws-cdk-lib.aws_ec2.SelectedSubnets: dropped struct, not all required types representable: enum-class was culled: constructs.IDependable
+- aws-cdk-lib.aws_ecs.AddCapacityOptions: dropped optional property 'machineImage': type not representable: enum-class was culled: aws-cdk-lib.aws_ec2.IMachineImage
+- aws-cdk-lib.aws_ecs.CommonTaskDefinitionAttributes: dropped optional property 'taskRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_ecs.CommonTaskDefinitionProps: dropped optional property 'executionRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_ecs.CommonTaskDefinitionProps: dropped optional property 'taskRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_ecs.Ec2TaskDefinitionAttributes: dropped optional property 'taskRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_ecs.Ec2TaskDefinitionProps: dropped optional property 'executionRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_ecs.Ec2TaskDefinitionProps: dropped optional property 'taskRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_ecs.ExternalTaskDefinitionAttributes: dropped optional property 'taskRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_ecs.ExternalTaskDefinitionProps: dropped optional property 'executionRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_ecs.ExternalTaskDefinitionProps: dropped optional property 'taskRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_ecs.FargateTaskDefinitionAttributes: dropped optional property 'taskRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_ecs.FargateTaskDefinitionProps: dropped optional property 'executionRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_ecs.FargateTaskDefinitionProps: dropped optional property 'taskRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_ecs.ScalableTaskCountProps: dropped struct, not all required types representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_ecs.TaskDefinitionAttributes: dropped optional property 'taskRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_ecs.TaskDefinitionProps: dropped optional property 'executionRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_ecs.TaskDefinitionProps: dropped optional property 'taskRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_ecs_patterns.ApplicationLoadBalancedTaskImageOptions: dropped optional property 'executionRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_ecs_patterns.ApplicationLoadBalancedTaskImageOptions: dropped optional property 'taskRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_ecs_patterns.ApplicationLoadBalancedTaskImageProps: dropped optional property 'executionRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_ecs_patterns.ApplicationLoadBalancedTaskImageProps: dropped optional property 'taskRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_ecs_patterns.NetworkLoadBalancedTaskImageOptions: dropped optional property 'executionRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_ecs_patterns.NetworkLoadBalancedTaskImageOptions: dropped optional property 'taskRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_ecs_patterns.NetworkLoadBalancedTaskImageProps: dropped optional property 'executionRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_ecs_patterns.NetworkLoadBalancedTaskImageProps: dropped optional property 'taskRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_eks.ClusterAttributes: dropped optional property 'kubectlLambdaRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_eks.ClusterOptions: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_eks.ClusterOptions: dropped optional property 'mastersRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_eks.ClusterProps: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_eks.ClusterProps: dropped optional property 'mastersRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_eks.ClusterProps: dropped optional property 'kubectlLambdaRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_eks.CommonClusterOptions: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_eks.FargateClusterProps: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_eks.FargateClusterProps: dropped optional property 'mastersRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_eks.FargateProfileOptions: dropped optional property 'podExecutionRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_eks.FargateProfileProps: dropped optional property 'podExecutionRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_eks.KubectlProviderAttributes: dropped struct, not all required types representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_eks.NodegroupOptions: dropped optional property 'nodeRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_eks.NodegroupProps: dropped optional property 'nodeRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_elasticsearch.CognitoOptions: dropped struct, not all required types representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_elasticsearch.DomainProps: dropped optional property 'cognitoKibanaAuth': type not representable: struct was culled: aws-cdk-lib.aws_elasticsearch.CognitoOptions
+- aws-cdk-lib.aws_events.RuleTargetConfig: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_events_targets.ApiDestinationProps: dropped optional property 'eventRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_events_targets.ApiGatewayProps: dropped optional property 'eventRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_events_targets.CodeBuildProjectProps: dropped optional property 'eventRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_events_targets.CodePipelineTargetOptions: dropped optional property 'eventRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_events_targets.EcsTaskProps: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_events_targets.EventBusProps: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_events_targets.SfnStateMachineProps: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_iam.AddToPrincipalPolicyResult: dropped optional property 'policyDependable': type not representable: enum-class was culled: constructs.IDependable
+- aws-cdk-lib.aws_iam.AddToResourcePolicyResult: dropped optional property 'policyDependable': type not representable: enum-class was culled: constructs.IDependable
+- aws-cdk-lib.aws_lambda.DockerImageFunctionProps: dropped optional property 'logRetentionRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_lambda.DockerImageFunctionProps: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_lambda.FunctionAttributes: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_lambda.FunctionOptions: dropped optional property 'logRetentionRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_lambda.FunctionOptions: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_lambda.FunctionProps: dropped optional property 'logRetentionRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_lambda.FunctionProps: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_lambda.SingletonFunctionProps: dropped optional property 'logRetentionRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_lambda.SingletonFunctionProps: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_lambda_nodejs.NodejsFunctionProps: dropped optional property 'logRetentionRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_lambda_nodejs.NodejsFunctionProps: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_logs.CrossAccountDestinationProps: dropped struct, not all required types representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_logs.LogRetentionProps: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_logs.LogSubscriptionDestinationConfig: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_logs.MetricFilterOptions: dropped struct, not all required types representable: enum-class was culled: aws-cdk-lib.aws_logs.IFilterPattern
+- aws-cdk-lib.aws_logs.MetricFilterProps: dropped struct, not all required types representable: enum-class was culled: aws-cdk-lib.aws_logs.IFilterPattern
+- aws-cdk-lib.aws_logs_destinations.KinesisDestinationProps: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_opensearchservice.CognitoOptions: dropped struct, not all required types representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_opensearchservice.DomainProps: dropped optional property 'cognitoDashboardsAuth': type not representable: struct was culled: aws-cdk-lib.aws_opensearchservice.CognitoOptions
+- aws-cdk-lib.aws_rds.ClusterEngineBindOptions: dropped optional property 'parameterGroup': type not representable: construct was culled: aws-cdk-lib.aws_rds.ParameterGroup
+- aws-cdk-lib.aws_rds.ClusterEngineBindOptions: dropped optional property 's3ExportRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_rds.ClusterEngineBindOptions: dropped optional property 's3ImportRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_rds.ClusterEngineConfig: dropped optional property 'parameterGroup': type not representable: construct was culled: aws-cdk-lib.aws_rds.ParameterGroup
+- aws-cdk-lib.aws_rds.DatabaseInstanceNewProps: dropped optional property 'cloudwatchLogsRetentionRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_rds.DatabaseInstanceNewProps: dropped optional property 'domainRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_rds.DatabaseInstanceNewProps: dropped optional property 'monitoringRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_rds.DatabaseInstanceNewProps: dropped optional property 'optionGroup': type not representable: construct was culled: aws-cdk-lib.aws_rds.OptionGroup
+- aws-cdk-lib.aws_rds.DatabaseInstanceNewProps: dropped optional property 'parameterGroup': type not representable: construct was culled: aws-cdk-lib.aws_rds.ParameterGroup
+- aws-cdk-lib.aws_rds.DatabaseInstanceNewProps: dropped optional property 's3ExportRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_rds.DatabaseInstanceNewProps: dropped optional property 's3ImportRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_rds.DatabaseInstanceReadReplicaProps: dropped optional property 'cloudwatchLogsRetentionRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_rds.DatabaseInstanceReadReplicaProps: dropped optional property 'domainRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_rds.DatabaseInstanceReadReplicaProps: dropped optional property 'monitoringRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_rds.DatabaseInstanceReadReplicaProps: dropped optional property 'optionGroup': type not representable: construct was culled: aws-cdk-lib.aws_rds.OptionGroup
+- aws-cdk-lib.aws_rds.DatabaseInstanceReadReplicaProps: dropped optional property 'parameterGroup': type not representable: construct was culled: aws-cdk-lib.aws_rds.ParameterGroup
+- aws-cdk-lib.aws_rds.DatabaseInstanceReadReplicaProps: dropped optional property 's3ExportRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_rds.DatabaseInstanceReadReplicaProps: dropped optional property 's3ImportRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_rds.DatabaseProxyOptions: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_rds.DatabaseProxyProps: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_rds.InstanceEngineBindOptions: dropped optional property 'optionGroup': type not representable: construct was culled: aws-cdk-lib.aws_rds.OptionGroup
+- aws-cdk-lib.aws_rds.InstanceEngineBindOptions: dropped optional property 's3ExportRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_rds.InstanceEngineBindOptions: dropped optional property 's3ImportRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_rds.InstanceEngineConfig: dropped optional property 'optionGroup': type not representable: construct was culled: aws-cdk-lib.aws_rds.OptionGroup
+- aws-cdk-lib.aws_rds.InstanceProps: dropped optional property 'parameterGroup': type not representable: construct was culled: aws-cdk-lib.aws_rds.ParameterGroup
+- aws-cdk-lib.aws_route53.CrossAccountZoneDelegationRecordProps: dropped struct, not all required types representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_route53.VpcEndpointServiceDomainNameProps: dropped struct, not all required types representable: construct was culled: aws-cdk-lib.aws_ec2.VpcEndpointService
+- aws-cdk-lib.aws_s3.BucketAttributes: dropped optional property 'notificationsHandlerRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_s3.BucketProps: dropped optional property 'notificationsHandlerRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_s3_deployment.DeploymentSourceContext: dropped struct, not all required types representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_secretsmanager.SecretRotationProps: dropped struct, not all required types representable: enum-class was culled: aws-cdk-lib.aws_ec2.IConnectable
+- aws-cdk-lib.aws_stepfunctions.StateMachineProps: dropped struct, not all required types representable: enum-class was culled: aws-cdk-lib.aws_stepfunctions.IChainable
+- aws-cdk-lib.aws_stepfunctions.StateMachineProps: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_stepfunctions_tasks.EmrContainersStartJobRunProps: dropped optional property 'executionRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_stepfunctions_tasks.EmrCreateClusterProps: dropped optional property 'autoScalingRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_stepfunctions_tasks.EmrCreateClusterProps: dropped optional property 'clusterRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_stepfunctions_tasks.EmrCreateClusterProps: dropped optional property 'serviceRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_stepfunctions_tasks.SageMakerCreateTrainingJobProps: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_stepfunctions_tasks.SageMakerCreateTransformJobProps: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.custom_resources.AwsCustomResourceProps: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.custom_resources.ProviderProps: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.pipelines.CodeBuildStepProps: dropped optional property 'input': type not representable: enum-class was culled: aws-cdk-lib.pipelines.IFileSetProducer
+- aws-cdk-lib.pipelines.CodeBuildStepProps: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.pipelines.CodeCommitSourceOptions: dropped optional property 'eventRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.pipelines.CodePipelineProps: dropped struct, not all required types representable: enum-class was culled: aws-cdk-lib.pipelines.IFileSetProducer
+- aws-cdk-lib.pipelines.EcrDockerCredentialOptions: dropped optional property 'assumeRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.pipelines.ExternalDockerCredentialOptions: dropped optional property 'assumeRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.pipelines.PipelineBaseProps: dropped struct, not all required types representable: enum-class was culled: aws-cdk-lib.pipelines.IFileSetProducer
+- aws-cdk-lib.pipelines.ShellStepProps: dropped optional property 'input': type not representable: enum-class was culled: aws-cdk-lib.pipelines.IFileSetProducer
+- aws-cdk-lib.triggers.TriggerFunctionProps: dropped optional property 'logRetentionRole': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.triggers.TriggerFunctionProps: dropped optional property 'role': type not representable: construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_ec2.CloudFormationInit: dropped unconstructible class: unusable factory 'fromConfigSets': struct was culled: aws-cdk-lib.aws_ec2.ConfigSetProps
+- aws-cdk-lib.aws_ec2.FlowLogDestination: problems with factories: unusable factory 'toCloudWatchLogs': construct was culled: aws-cdk-lib.aws_iam.LazyRole, construct was culled: aws-cdk-lib.aws_iam.Role
+- aws-cdk-lib.aws_iam.Grant: dropped unconstructible class: unusable factory 'addToPrincipal': struct was culled: aws-cdk-lib.aws_iam.GrantOnPrincipalOptions, unusable factory 'addToPrincipalAndResource': struct was culled: aws-cdk-lib.aws_iam.GrantOnPrincipalAndResourceOptions, unusable factory 'addToPrincipalOrResource': struct was culled: aws-cdk-lib.aws_iam.GrantWithResourceOptions
+- aws-cdk-lib.aws_rds.ProxyTarget: problems with factories: unusable factory 'fromCluster': construct was culled: aws-cdk-lib.aws_rds.DatabaseCluster, construct was culled: aws-cdk-lib.aws_rds.DatabaseClusterFromSnapshot
+- aws-cdk-lib.aws_stepfunctions.Chain: dropped unconstructible class: unusable factory 'sequence': enum-class was culled: aws-cdk-lib.aws_stepfunctions.IChainable, enum-class was culled: aws-cdk-lib.aws_stepfunctions.IChainable, unusable factory 'start': enum-class was culled: aws-cdk-lib.aws_stepfunctions.IChainable
+- aws-cdk-lib.pipelines.StackDeployment: dropped unconstructible class: unusable factory 'fromArtifact': enum-class was culled: aws-cdk-lib.cx_api.CloudFormationStackArtifact
+- aws-cdk-lib.aws_cloudwatch_actions.ApplicationScalingAction: dropped integration: construct was culled: aws-cdk-lib.aws_cloudwatch.Alarm, 
+- aws-cdk-lib.aws_cloudwatch_actions.AutoScalingAction: dropped integration: construct was culled: aws-cdk-lib.aws_cloudwatch.Alarm, 
+- aws-cdk-lib.aws_cloudwatch_actions.SnsAction: dropped integration: construct was culled: aws-cdk-lib.aws_cloudwatch.Alarm, 
+- aws-cdk-lib.aws_cloudwatch_actions.ApplicationScalingAction: dropped integration: construct was culled: aws-cdk-lib.aws_cloudwatch.Alarm, 
+- aws-cdk-lib.aws_cloudwatch_actions.AutoScalingAction: dropped integration: construct was culled: aws-cdk-lib.aws_cloudwatch.Alarm, 
+- aws-cdk-lib.aws_cloudwatch_actions.SnsAction: dropped integration: construct was culled: aws-cdk-lib.aws_cloudwatch.Alarm, 
+- aws-cdk-lib.aws_cloudwatch_actions.ApplicationScalingAction: dropped integration: construct was culled: aws-cdk-lib.aws_cloudwatch.Alarm, 
+- aws-cdk-lib.aws_cloudwatch_actions.AutoScalingAction: dropped integration: construct was culled: aws-cdk-lib.aws_cloudwatch.Alarm, 
+- aws-cdk-lib.aws_cloudwatch_actions.SnsAction: dropped integration: construct was culled: aws-cdk-lib.aws_cloudwatch.Alarm, 
+- aws-cdk-lib.aws_cloudwatch_actions.ApplicationScalingAction: dropped integration: construct was culled: aws-cdk-lib.aws_cloudwatch.CompositeAlarm, 
+- aws-cdk-lib.aws_cloudwatch_actions.AutoScalingAction: dropped integration: construct was culled: aws-cdk-lib.aws_cloudwatch.CompositeAlarm, 
+- aws-cdk-lib.aws_cloudwatch_actions.SnsAction: dropped integration: construct was culled: aws-cdk-lib.aws_cloudwatch.CompositeAlarm, 
+- aws-cdk-lib.aws_cloudwatch_actions.ApplicationScalingAction: dropped integration: construct was culled: aws-cdk-lib.aws_cloudwatch.CompositeAlarm, 
+- aws-cdk-lib.aws_cloudwatch_actions.AutoScalingAction: dropped integration: construct was culled: aws-cdk-lib.aws_cloudwatch.CompositeAlarm, 
+- aws-cdk-lib.aws_cloudwatch_actions.SnsAction: dropped integration: construct was culled: aws-cdk-lib.aws_cloudwatch.CompositeAlarm, 
+- aws-cdk-lib.aws_cloudwatch_actions.ApplicationScalingAction: dropped integration: construct was culled: aws-cdk-lib.aws_cloudwatch.CompositeAlarm, 
+- aws-cdk-lib.aws_cloudwatch_actions.AutoScalingAction: dropped integration: construct was culled: aws-cdk-lib.aws_cloudwatch.CompositeAlarm, 
+- aws-cdk-lib.aws_cloudwatch_actions.SnsAction: dropped integration: construct was culled: aws-cdk-lib.aws_cloudwatch.CompositeAlarm, 
+- aws-cdk-lib.aws_autoscaling.AutoScalingGroup: dropped construct, not all types representable: struct was culled: aws-cdk-lib.aws_autoscaling.AutoScalingGroupProps
+- aws-cdk-lib.aws_cloudfront.Distribution: dropped construct, not all types representable: struct was culled: aws-cdk-lib.aws_cloudfront.DistributionProps
+- aws-cdk-lib.aws_ec2.GatewayVpcEndpoint: dropped construct, not all types representable: struct was culled: aws-cdk-lib.aws_ec2.GatewayVpcEndpointProps
+- aws-cdk-lib.aws_ec2.Instance: dropped construct, not all types representable: struct was culled: aws-cdk-lib.aws_ec2.InstanceProps
+- aws-cdk-lib.aws_ec2.InterfaceVpcEndpoint: dropped construct, not all types representable: struct was culled: aws-cdk-lib.aws_ec2.InterfaceVpcEndpointProps
+- aws-cdk-lib.aws_ecs.ScalableTaskCount: dropped construct, not all types representable: struct was culled: aws-cdk-lib.aws_ecs.ScalableTaskCountProps
+- aws-cdk-lib.aws_logs.CrossAccountDestination: dropped construct, not all types representable: struct was culled: aws-cdk-lib.aws_logs.CrossAccountDestinationProps
+- aws-cdk-lib.aws_logs.MetricFilter: dropped construct, not all types representable: struct was culled: aws-cdk-lib.aws_logs.MetricFilterProps
+- aws-cdk-lib.aws_route53.CrossAccountZoneDelegationRecord: dropped construct, not all types representable: struct was culled: aws-cdk-lib.aws_route53.CrossAccountZoneDelegationRecordProps
+- aws-cdk-lib.aws_route53.VpcEndpointServiceDomainName: dropped construct, not all types representable: struct was culled: aws-cdk-lib.aws_route53.VpcEndpointServiceDomainNameProps
+- aws-cdk-lib.aws_secretsmanager.SecretRotation: dropped construct, not all types representable: struct was culled: aws-cdk-lib.aws_secretsmanager.SecretRotationProps
+- aws-cdk-lib.aws_stepfunctions.StateMachine: dropped construct, not all types representable: struct was culled: aws-cdk-lib.aws_stepfunctions.StateMachineProps
+- aws-cdk-lib.pipelines.CodePipeline: dropped construct, not all types representable: struct was culled: aws-cdk-lib.pipelines.CodePipelineProps
+- aws-cdk-lib.aws_apigateway.StepFunctionsRestApiProps: dropped struct, not all required types representable: construct was culled: aws-cdk-lib.aws_stepfunctions.StateMachine
+- aws-cdk-lib.aws_autoscaling.LifecycleHookProps: dropped struct, not all required types representable: construct was culled: aws-cdk-lib.aws_autoscaling.AutoScalingGroup
+- aws-cdk-lib.aws_autoscaling.ScheduledActionProps: dropped struct, not all required types representable: construct was culled: aws-cdk-lib.aws_autoscaling.AutoScalingGroup
+- aws-cdk-lib.aws_autoscaling.StepScalingActionProps: dropped struct, not all required types representable: construct was culled: aws-cdk-lib.aws_autoscaling.AutoScalingGroup
+- aws-cdk-lib.aws_autoscaling.TargetTrackingScalingPolicyProps: dropped struct, not all required types representable: construct was culled: aws-cdk-lib.aws_autoscaling.AutoScalingGroup
+- aws-cdk-lib.aws_codepipeline_actions.StepFunctionsInvokeActionProps: dropped struct, not all required types representable: construct was culled: aws-cdk-lib.aws_stepfunctions.StateMachine
+- aws-cdk-lib.aws_ec2.BastionHostLinuxProps: dropped optional property 'init': type not representable: enum-class was culled: aws-cdk-lib.aws_ec2.CloudFormationInit
+- aws-cdk-lib.aws_ecs.AsgCapacityProviderProps: dropped struct, not all required types representable: construct was culled: aws-cdk-lib.aws_autoscaling.AutoScalingGroup
+- aws-cdk-lib.aws_ecs.ClusterAttributes: dropped optional property 'autoscalingGroup': type not representable: construct was culled: aws-cdk-lib.aws_autoscaling.AutoScalingGroup
+- aws-cdk-lib.aws_rds.CommonRotationUserOptions: dropped optional property 'endpoint': type not representable: construct was culled: aws-cdk-lib.aws_ec2.InterfaceVpcEndpoint
+- aws-cdk-lib.aws_rds.RotationMultiUserOptions: dropped optional property 'endpoint': type not representable: construct was culled: aws-cdk-lib.aws_ec2.InterfaceVpcEndpoint
+- aws-cdk-lib.aws_rds.RotationSingleUserOptions: dropped optional property 'endpoint': type not representable: construct was culled: aws-cdk-lib.aws_ec2.InterfaceVpcEndpoint
+- aws-cdk-lib.aws_stepfunctions_tasks.StepFunctionsStartExecutionProps: dropped struct, not all required types representable: construct was culled: aws-cdk-lib.aws_stepfunctions.StateMachine
+- aws-cdk-lib.aws_events_targets.SfnStateMachine: dropped integration: construct was culled: aws-cdk-lib.aws_stepfunctions.StateMachine
+- aws-cdk-lib.aws_globalaccelerator_endpoints.InstanceEndpoint: dropped integration: construct was culled: aws-cdk-lib.aws_ec2.Instance
+- aws-cdk-lib.aws_apigateway.StepFunctionsRestApi: dropped construct, not all types representable: struct was culled: aws-cdk-lib.aws_apigateway.StepFunctionsRestApiProps
+- aws-cdk-lib.aws_autoscaling.LifecycleHook: dropped construct, not all types representable: struct was culled: aws-cdk-lib.aws_autoscaling.LifecycleHookProps
+- aws-cdk-lib.aws_autoscaling.ScheduledAction: dropped construct, not all types representable: struct was culled: aws-cdk-lib.aws_autoscaling.ScheduledActionProps
+- aws-cdk-lib.aws_autoscaling.StepScalingAction: dropped construct, not all types representable: struct was culled: aws-cdk-lib.aws_autoscaling.StepScalingActionProps
+- aws-cdk-lib.aws_autoscaling.TargetTrackingScalingPolicy: dropped construct, not all types representable: struct was culled: aws-cdk-lib.aws_autoscaling.TargetTrackingScalingPolicyProps
+- aws-cdk-lib.aws_ecs.AsgCapacityProvider: dropped construct, not all types representable: struct was culled: aws-cdk-lib.aws_ecs.AsgCapacityProviderProps
+- aws-cdk-lib.aws_stepfunctions_tasks.StepFunctionsStartExecution: dropped construct, not all types representable: struct was culled: aws-cdk-lib.aws_stepfunctions_tasks.StepFunctionsStartExecutionProps
+- aws-cdk-lib.aws_autoscaling.BindHookTargetOptions: dropped struct, not all required types representable: construct was culled: aws-cdk-lib.aws_autoscaling.LifecycleHook
+- aws-cdk-lib.aws_events_targets.ApiGateway: dropped integration: construct was culled: aws-cdk-lib.aws_apigateway.StepFunctionsRestApi
