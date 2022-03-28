@@ -84,12 +84,24 @@ export interface EnumClassInfo extends Documentable {
   readonly fqn: string;
   readonly displayName: string;
   readonly factories: EnumClassFactory[];
+  readonly singletons: EnumClassSingleton[];
 }
 
+/**
+ * A static factory method that produces instances of the enum-class
+ */
 export interface EnumClassFactory extends Documentable {
   readonly displayName: string;
   readonly methodName: string;
   readonly parameters: ParameterValue[];
+}
+
+/**
+ * A static readonly const member that returns a singleton instance of the enum-class
+ */
+export interface EnumClassSingleton extends Documentable {
+  readonly displayName: string;
+  readonly propertyName: string;
 }
 
 export interface EnumInfo extends Documentable {

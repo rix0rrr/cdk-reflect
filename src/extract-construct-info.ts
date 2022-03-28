@@ -1,6 +1,7 @@
 import * as spec from '@jsii/spec';
+import * as Case from 'case';
 import * as reflect from 'jsii-reflect';
-import { ConstructInfoModel, EnumClassFactory, IntegrationInfo, MetricInfo, ParameterValue, Type } from './info-model';
+import { ConstructInfoModel, EnumClassFactory, EnumClassSingleton, IntegrationInfo, MetricInfo, ParameterValue, Type } from './info-model';
 import { failure, isFailure, isSuccess, liftObjR, liftR, mkdict, partition, reasons, Result, success, unwrapR } from './util';
 
 export interface ExtractConstructInfoOptions {
@@ -9,6 +10,7 @@ export interface ExtractConstructInfoOptions {
 
 export interface ExtractConstructInfoResult {
   readonly constructInfo: ConstructInfoModel;
+  readonly diagnostics: Diagnostic[];
 }
 
 export async function extractConstructInfo(options: ExtractConstructInfoOptions): Promise<ExtractConstructInfoResult> {
@@ -24,6 +26,7 @@ export async function extractConstructInfo(options: ExtractConstructInfoOptions)
 
   return {
     constructInfo: parser.constructInfo,
+    diagnostics: parser.diagnostics,
   };
 }
 
@@ -92,7 +95,7 @@ class TypeSystemParser {
     if (propsTypes.length > 0 && constructPropertyTypes.length === 0) {
       this.emitDiagnostic({
         fqn: klass.fqn,
-        message: `Construct not instantiable: ${reasons(propsTypes)}`,
+        message: `construct not instantiable: ${reasons(propsTypes)}`,
       });
       return;
     }
@@ -154,7 +157,7 @@ class TypeSystemParser {
       if (isFailure(parameterTypesR)) {
         this.emitDiagnostic({
           fqn: impl.fqn,
-          message: `Cannot instantiate class: ${parameterTypesR.reason}`,
+          message: `cannot instantiate class: ${parameterTypesR.reason}`,
         });
         continue;
       }
@@ -196,11 +199,11 @@ class TypeSystemParser {
   private tryEnum(enm: reflect.EnumType) {
     this.constructInfo.enums[enm.fqn] = {
       fqn: enm.fqn,
-      displayName: enm.name,
+      displayName: displayName(enm.name),
       ...extractDocs(enm),
 
       members: enm.members.map(mem => ({
-        displayName: mem.name, // FIXME: Recase?
+        displayName: displayName(mem.name),
         memberName: mem.name,
         ...extractDocs(mem),
       })),
@@ -210,8 +213,8 @@ class TypeSystemParser {
   private tryEnumClass(klass: reflect.ClassType) {
     if (!this.isEnumClass(klass)) { return; }
 
-    const statics = klass.allMethods.filter(m => m.static);
-    const factMethods = statics.filter(m => isFactoryFunction(klass, m));
+    const factMethods = klass.allMethods.filter(m => isFactoryFunction(klass, m));
+    const singletonProps = klass.allProperties.filter(x => isSingletonProperty(klass, x));
 
     const rizzons = [];
 
@@ -235,17 +238,26 @@ class TypeSystemParser {
       }));
 
       factories.push({
-        displayName: m.name,
+        displayName: displayName(m.name),
         methodName: m.name,
         parameters,
         ...extractDocs(m),
       });
     }
 
-    if (factories.length === 0) {
+    const singletons: EnumClassSingleton[] = [];
+    for (const p of singletonProps) {
+      singletons.push({
+        displayName: displayName(p.name),
+        propertyName: p.name,
+        ...extractDocs(p),
+      });
+    }
+
+    if (factories.length === 0 && singletons.length === 0) {
       this.emitDiagnostic({
         fqn: klass.fqn,
-        message: `Enum-class not instantiable: ${rizzons.join(', ')}`,
+        message: `potential enum-class not instantiable: ${rizzons.join(', ')}`,
       });
       return;
     }
@@ -254,6 +266,7 @@ class TypeSystemParser {
       fqn: klass.fqn,
       displayName: klass.name,
       factories,
+      singletons,
       ...extractDocs(klass),
     };
   }
@@ -262,17 +275,27 @@ class TypeSystemParser {
    * A class is an enum class if it:
    *
    * - Is NOT a construct
-   * - Has static functions that return the same type (factories)
-   *    (NOTE: occasionally a supertype?)
-   * - Doesn't have any static methods that aren't factory functions
+   * - Has factory methods or singleton properties
+   *
+   * - Factory methods:
+   *   - Has static functions that return the same type (factories)
+   *      (NOTE: occasionally a supertype?)
+   *   - Doesn't have any static methods that aren't factory functions
    */
   private isEnumClass(klass: reflect.ClassType) {
+    if (klass.fqn === 'aws-cdk-lib.aws_apigateway.AwsIntegration') {
+      debugger;
+    }
     if (this.isConstruct(klass)) { return false; }
 
     const statics = klass.allMethods.filter(m => m.static);
     const [factories, nonFactories] = partition(statics, m => isFactoryFunction(klass, m));
+    const singletonProps = klass.allProperties.filter(p => isSingletonProperty(klass, p));
 
-    return factories.length > 0 && nonFactories.length === 0;
+    const hasFactoryMethods = factories.length > 0 && nonFactories.length === 0;
+    const hasSingletonProps = singletonProps.length > 0;
+
+    return hasFactoryMethods || hasSingletonProps;
   }
 
   private hasEnumClassImplementors(iface: reflect.InterfaceType) {
@@ -292,7 +315,7 @@ class TypeSystemParser {
     if (!isSuccess(ps)) {
       this.emitDiagnostic({
         fqn: struct.fqn,
-        message: `Struct not instantiable: ${ps.reason}`,
+        message: `struct not instantiable: ${ps.reason}`,
       });
       return;
     }
@@ -397,11 +420,39 @@ function isConstructType(k: Type): k is Extract<Type, { kind: 'construct' }> {
 }
 
 /**
- * A factory function is a function that has a return type which is the containing class, or one of the class' bases
+ * A factory function is a function that is:
+ *
+ * - Static public
+ * - Has a return type which is a subtype of the parent class, or a supertype which
+ *   lives in the same submodule.
  */
 function isFactoryFunction(klass: reflect.ClassType, m: reflect.Method): boolean {
   const returnType = m.returns.type.type;
-  return (klass === returnType) || (!!returnType && klass.extends(returnType));
+  if (!returnType || !m.static || m.protected) { return false; }
+  return returnType.extends(klass) || extendsTypeInSameSubmodule(klass, returnType);
+}
+
+/**
+ * A property is a singleton property if it is:
+ *
+ * - Static public readonly
+ * - Has a type that is a subtype of the parent class, or a supertype which lives in
+ *   the same submodule.
+ */
+function isSingletonProperty(klass: reflect.ClassType, p: reflect.Property): boolean {
+  const type = p.type.type;
+  if (!type || !p.static || p.protected || !p.immutable) { return false; }
+  return type.extends(klass) || extendsTypeInSameSubmodule(klass, type);
+}
+
+function extendsTypeInSameSubmodule(subtype: reflect.Type, supertype: reflect.Type) {
+  if (!subtype.extends(supertype)) { return false; }
+  return submoduleFqn(subtype.fqn) === submoduleFqn(supertype.fqn);
+}
+
+function submoduleFqn(fqn: string) {
+  const parts = fqn.split('.');
+  return parts.slice(0, parts.length - 1).join('.');
 }
 
 function unwrapSuccesses<A>(xs: Result<A>[]): A[] {
@@ -425,4 +476,8 @@ function addToList<A>(xs: Record<string, A[]>, key: string, value: A) {
     xs[key] = [];
   }
   xs[key].push(value);
+}
+
+function displayName(x: string) {
+  return Case.pascal(x);
 }

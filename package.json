@@ -59,6 +59,7 @@
   },
   "dependencies": {
     "@jsii/spec": "^1.55.1",
+    "case": "^1.6.3",
     "fs-extra": "^10.0.1",
     "jsii-reflect": "^1.55.0",
     "yargs": "^17.3.1"

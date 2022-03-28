@@ -45,6 +45,26 @@ test('check that some enum classes are recognized', async () => {
   }));
 });
 
+test('detect enum class that returns explicit subclasses', () => {
+  // 'aws_appmesh.TlsValidationTrust' is a class where the factories show the
+  // subclasses they return. Make sure we detect those.
+  const fqn = 'aws-cdk-lib.aws_appmesh.TlsValidationTrust';
+  expect(result.constructInfo.enumClasses[fqn]).toBeTruthy();
+  expect(result.constructInfo.enumClasses[fqn].factories).toContainEqual(expect.objectContaining({
+    methodName: 'acm',
+  }));
+});
+
+test('detect enum class that has statically initialized properties', () => {
+  // 'aws_s3.StorageClass' is a class which has static readonly properties that
+  // represent the different options.
+  const fqn = 'aws-cdk-lib.aws_s3.StorageClass';
+  expect(result.constructInfo.enumClasses[fqn]).toBeTruthy();
+  expect(result.constructInfo.enumClasses[fqn].singletons).toContainEqual(expect.objectContaining({
+    propertyName: 'INFREQUENT_ACCESS',
+  }));
+});
+
 test('check some integrations', async () => {
   const reader = new ConstructInfoReader(result.constructInfo);
   const integs = reader.integrationsBySource('aws-cdk-lib.aws_sns.Topic');
