@@ -1,15 +1,15 @@
 import * as spec from '@jsii/spec';
 import * as Case from 'case';
 import * as reflect from 'jsii-reflect';
-import { ConstructInfoModel, EnumClassFactory, EnumClassSingleton, IntegrationInfo, MetricInfo, ParameterValue, Type } from './info-model';
-import { Failure, failure, isFailure, isSuccess, liftR, mkdict, partition, reasons, Result, success, unwrapR } from './util';
+import { Failure, failure, isFailure, isSuccess, liftR, mkdict, partition, reasons, Result, success, unwrapR } from '../util';
+import { DeclarativeConstructInfoModel, EnumClassFactory, EnumClassSingleton, IntegrationInfo, MetricInfo, ParameterValue, Type } from './declarative-construct-model';
 
 export interface ExtractConstructInfoOptions {
   readonly assemblyLocations: string[];
 }
 
 export interface ExtractConstructInfoResult {
-  readonly constructInfo: ConstructInfoModel;
+  readonly constructInfo: DeclarativeConstructInfoModel;
   readonly diagnostics: Diagnostic[];
 }
 
@@ -31,7 +31,7 @@ export async function extractConstructInfo(options: ExtractConstructInfoOptions)
 }
 
 class TypeSystemParser {
-  public readonly constructInfo: ConstructInfoModel;
+  public readonly constructInfo: DeclarativeConstructInfoModel;
   public readonly diagnostics = new Array<Diagnostic>();
   private readonly constructBase?: reflect.Type;
   private readonly iConstructBase?: reflect.Type;

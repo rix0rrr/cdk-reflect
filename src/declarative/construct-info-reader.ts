@@ -1,7 +1,7 @@
-import { ConstructInfoModel } from './info-model';
+import { DeclarativeConstructInfoModel } from './declarative-construct-model';
 
-export class ConstructInfoReader {
-  constructor(private readonly model: ConstructInfoModel) {
+export class DeclarativeConstructInfoReader {
+  constructor(private readonly model: DeclarativeConstructInfoModel) {
   }
 
   public integrationsBySource(fqn: string) {

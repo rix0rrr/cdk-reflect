@@ -69,3 +69,17 @@ export function mkdict<A>(xs: Array<[string, A]>): Record<string, A> {
   }
   return ret;
 }
+
+export function classNameFromFqn(fqn: string) {
+  const xs = fqn.split('.');
+  return xs[xs.length - 1];
+}
+
+export function lcfirst(x: string) {
+  return x.substring(0, 1).toLowerCase() + x.substring(1);
+}
+
+export function assertSwitchIsExhaustive(x: never): never {
+  void(x);
+  throw new Error("Didn't expect to get here");
+}

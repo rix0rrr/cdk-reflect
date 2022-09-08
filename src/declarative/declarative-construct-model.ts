@@ -1,6 +1,6 @@
 import * as spec from '@jsii/spec';
 
-export interface ConstructInfoModel {
+export interface DeclarativeConstructInfoModel {
   /**
    * All construct ({ fqn -> ConstructInfo })
    */

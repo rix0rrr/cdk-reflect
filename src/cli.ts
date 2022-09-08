@@ -1,24 +1,84 @@
 import * as fs from 'fs-extra';
+import prand from 'pure-rand';
 import * as yargs from 'yargs';
-import { extractConstructInfo } from './extract-construct-info';
+import { parseValueSources } from './construction/parse-values-sources';
+import { Planner } from './construction/plan';
+import { Synthesizer } from './construction/synth';
 
 async function main() {
-  const args = await yargs
-    .usage('$0 <ASSEMBLY..>')
-    .option('output', {
-      alias: 'o',
-      type: 'string',
-      describe: 'Where to write the extracted model',
-      requiresArg: true,
+  await yargs
+    .command('extract <ASSEMBLY..>', 'Extract builder model', cmdargs => cmdargs
+      .option('output', {
+        alias: 'o',
+        type: 'string',
+        describe: 'Where to write the extracted model',
+        requiresArg: true,
+      })
+      .positional('ASSEMBLY', {
+        type: 'string',
+        array: true,
+        required: true,
+      })
+      .demandOption('output'),
+    async (args) => {
+      const assemblyDirs = (args.ASSEMBLY ?? []).map(x => `${x}`);
+
+      const result = await parseValueSources({
+        assemblyLocations: assemblyDirs,
+      });
+
+      await fs.writeJson(args.output, result.model, { spaces: 2, encoding: 'utf-8' });
     })
-    .demandOption('output')
+    .command('plan <FQN>', 'Plan to build a specific type', cmdargs => cmdargs
+      .positional('FQN', {
+        type: 'string',
+        describe: 'FQN to plan',
+        required: true,
+      })
+      .option('input', {
+        alias: 'i',
+        type: 'string',
+        describe: 'The extracted model',
+        requiresArg: true,
+      })
+      .demandOption('input')
+      .option('synth', {
+        alias: 's',
+        type: 'boolean',
+        describe: 'Synthesize the planned type',
+        requiresArg: false,
+      })
+      .option('seed', {
+        alias: 'S',
+        type: 'number',
+        describe: 'PRNG seed',
+        requiresArg: true,
+      }),
+    async (args) => {
+      console.log(args);
+      const model = await fs.readJson(args.input);
+      const rng = prand.mersenne(args.seed ?? Date.now());
+      const planner = new Planner(model, rng, {
+        useVariables: true,
+      });
+      const statements = planner.plan(args.FQN!);
+      console.log(JSON.stringify(statements, undefined, 2));
+
+      if (args.synth) {
+        const synther = new Synthesizer({
+          printStatements: true,
+        });
+        const template = synther.synth(statements);
+        console.log(JSON.stringify(template, undefined, 2));
+      }
+    })
     .help()
     .strictOptions()
     .showHelpOnFail(false)
     .argv;
 
-  const assemblyDirs = args._.map(x => `${x}`);
-
+  /**
+  // This was all for the declarative model -- we're not doing that right now
   const result = await extractConstructInfo({
     assemblyLocations: assemblyDirs,
   });
@@ -35,14 +95,15 @@ async function main() {
     process.stdout.write(`${pad5(result.diagnostics.length)} warnings.\n`);
   }
 
-
   process.stdout.write(`${pad5(size(result.constructInfo.constructs))} constructs\n`);
   process.stdout.write(`${pad5(size(result.constructInfo.enumClasses))} enum classes\n`);
   process.stdout.write(`${pad5(size(result.constructInfo.enums))} enums\n`);
   process.stdout.write(`${pad5(size(result.constructInfo.structs))} structs\n`);
   process.stdout.write(`${pad5(size(result.constructInfo.integrations))} integrations\n`);
+  */
 }
 
+/*
 function size(xs: Record<string, any>): number {
   return Object.keys(xs).length;
 }
@@ -53,6 +114,7 @@ function mkpad(n: number) {
     return ' '.repeat(Math.max(n - s.length, 0)) + s;
   };
 }
+*/
 
 main().catch(e => {
   console.error(e);

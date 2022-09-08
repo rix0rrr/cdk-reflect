@@ -10,9 +10,11 @@ const project = new typescript.TypeScriptProject({
   description: 'Reflect on CDK construct libraries',
   deps: [
     'jsii-reflect',
+    'aws-cdk-lib',
     'fs-extra',
     'yargs',
     '@jsii/spec',
+    'pure-rand',
   ],
   devDeps: [
     '@types/jest',
@@ -20,7 +22,6 @@ const project = new typescript.TypeScriptProject({
     'jest',
     '@types/fs-extra',
     'typescript',
-    'aws-cdk-lib',
     'constructs',
   ],
   releaseToNpm: true,

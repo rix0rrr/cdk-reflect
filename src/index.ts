@@ -1,3 +1,3 @@
-export * from './construct-info-reader';
-export * from './extract-construct-info';
-export * from './info-model';
+export * from './declarative/construct-info-reader';
+export * from './declarative/extract-declarative-construct-info';
+export * from './declarative/declarative-construct-model';

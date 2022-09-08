@@ -28,10 +28,6 @@
       "type": "build"
     },
     {
-      "name": "aws-cdk-lib",
-      "type": "build"
-    },
-    {
       "name": "constructs",
       "type": "build"
     },
@@ -89,6 +85,10 @@
     },
     {
       "name": "@jsii/spec",
+      "type": "runtime"
+    },
+    {
+      "name": "aws-cdk-lib",
       "type": "runtime"
     },
     {
