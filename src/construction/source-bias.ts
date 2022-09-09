@@ -14,7 +14,7 @@ export type ValueLoc =
   | ArrayElementLoc
   ;
 
-interface ArgumentLoc {
+export interface ArgumentLoc {
   readonly type: 'argument';
   readonly argumentIndex: number;
   readonly argumentName: string;

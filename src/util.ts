@@ -83,3 +83,11 @@ export function assertSwitchIsExhaustive(x: never): never {
   void(x);
   throw new Error("Didn't expect to get here");
 }
+
+export function indent(x: string, ind: string = '  '): string {
+  return ind + x.replace(/\n/g, `\n${ind}`);
+}
+
+export function mapValues<A, B>(xs: Record<string, A>, fn: (x: A) => B): Record<string, B> {
+  return Object.fromEntries(Object.entries(xs).map(([k, v]) => [k, fn(v)]));
+}

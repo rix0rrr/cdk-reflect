@@ -1,7 +1,6 @@
 import { App, Stack } from 'aws-cdk-lib';
 import { assertSwitchIsExhaustive } from '../util';
-import { Statement } from './plan';
-import { printStatement } from './print-values';
+import { printStatement, Statement } from './statements';
 import { Value } from './values';
 
 export interface SynthesizerOptions {

@@ -1,17 +1,11 @@
 import prand from 'pure-rand';
-import { classNameFromFqn, lcfirst } from '../util';
+import { classNameFromFqn } from '../util';
 import { CallableContext, ISourceBiaser, ValueLoc } from './source-bias';
+import { isFqn, isSingleton, isString } from './value-source-predicates';
 import { FqnValueSource, ParameterSource, PrimitiveName, ValueSource, ValueSources } from './value-sources';
 import { Argument, PrimitiveValue, Value } from './values';
 
 export interface PlannerOptions {
-  /**
-   * Use variables to hold intermediate assignments
-   *
-   * @default false
-   */
-  readonly useVariables?: boolean;
-
   /**
    * Bias or replace the value sources sampled by the planner
    */
@@ -19,22 +13,14 @@ export interface PlannerOptions {
 }
 
 export class Planner {
-  private readonly statements = new Array<Statement>();
-  private readonly varCtr = new Map<string, number>();
-  private nestingLevel = 0;
-
   constructor(private readonly sources: ValueSources, public rng: prand.RandomGenerator, private readonly options: PlannerOptions = {}) {
   }
 
-  public plan(fqn: string): Statement[] {
-    const value = this.planFqn(fqn, []);
-    return [
-      ...this.statements,
-      { type: 'expression', value },
-    ];
+  public plan(fqn: string): Value {
+    return this.planFqn(fqn, []);
   }
 
-  public planMultiple(fqns: string[]): Statement[][] {
+  public planMultiple(fqns: string[]): Value[] {
     return fqns.map(fqn => this.plan(fqn));
   }
 
@@ -83,7 +69,7 @@ export class Planner {
       case 'value-object':
         return {
           type: 'object-literal',
-          fields: this.withNesting(() => this.planFields(source.fqn, source.fields, loc)),
+          fields: this.planFields(source.fqn, source.fields, loc),
         };
       case 'constant':
         return source.value;
@@ -98,7 +84,7 @@ export class Planner {
       case 'no-value':
         return { type: 'no-value' };
       case 'fqn':
-        return this.maybeExtract(this.planFqn(source.fqn, loc), source.fqn);
+        return this.planFqn(source.fqn, loc);
       case 'primitive':
         return this.planPrimitive(source.primitive);
       case 'array':
@@ -114,7 +100,7 @@ export class Planner {
     const ret: Argument[] = [];
     for (let i = startIndex; i < ps.length; i++) {
       const p = ps[i];
-      const value = this.planValue(p.value, [...loc, { type: 'argument', argumentIndex: i, argumentName: p.name, callable }]);
+      const value = this.planValue(p.value, [{ type: 'argument', argumentIndex: i, argumentName: p.name, callable }, ...loc]);
       if (value.type === 'no-value') {
         break;
       }
@@ -177,7 +163,7 @@ export class Planner {
 
     const elements: Value[] = [];
     for (let i = 0; i < length; i++) {
-      elements.push(this.planValue(elementSource, [...loc, { type: 'array-element', index: i }]));
+      elements.push(this.planValue(elementSource, [{ type: 'array-element', index: i }, ...loc]));
     }
 
     return { type: 'array', elements };
@@ -190,7 +176,7 @@ export class Planner {
     const fields: Record<string, Value> = {};
     for (let i = 0; i < length; i++) {
       const key = `key${i + 1}`;
-      fields[key] = this.planValue(elementSource, [...loc, { type: 'map-entry', key }]);
+      fields[key] = this.planValue(elementSource, [{ type: 'map-entry', key }, ...loc]);
     }
 
     return { type: 'object-literal', fields };
@@ -199,7 +185,7 @@ export class Planner {
   private planFields(fqn: string, fields: Record<string, ValueSource[]>, loc: ValueLoc[]): Record<string, Value> {
     const ret: Record<string, Value> = {};
     for (const [k, sources] of Object.entries(fields)) {
-      const value = this.planValue(sources, [...loc, { type: 'struct-field', fqn, fieldName: k }]);
+      const value = this.planValue(sources, [{ type: 'struct-field', fqn, fieldName: k }, ...loc]);
       if (value.type !== 'no-value') {
         ret[k] = value;
       }
@@ -221,68 +207,4 @@ export class Planner {
       ...this.planArguments(ps, loc, callable, 2),
     ];
   }
-
-  /**
-   * Maybe extract the given value to a variable
-   *
-   * Only extract if extracting is turned on and we are in a nested context, and this value
-   * is obtained from a method call or object instantiation.
-   *
-   * Return the value or the variable.
-   */
-  private maybeExtract(value: Value, namingHint: string): Value {
-    // Not enabled
-    if (!this.options.useVariables || this.nestingLevel === 0) { return value; }
-
-    // Not necessary
-    if (value.type !== 'class-instantiation' && value.type !== 'static-method-call') { return value; }
-
-    const variableName = this.makeVariableName(namingHint);
-    this.statements.push({ type: 'assignment', variableName, value });
-    return { type: 'variable', variableName };
-  }
-
-  private makeVariableName(fqn: string) {
-    const variableName = lcfirst(classNameFromFqn(fqn));
-    const i = (this.varCtr.get(variableName) ?? 0) + 1;
-    this.varCtr.set(variableName, i);
-    return `${variableName}${i > 1 ? i : ''}`;
-  }
-
-  private withNesting<A>(x: () => A): A {
-    this.nestingLevel += 1;
-    try {
-      return x();
-    } finally {
-      this.nestingLevel -= 1;
-    }
-  }
-}
-
-export type Statement =
-  | Assignment
-  | Expression
-  ;
-
-export interface Assignment {
-  readonly type: 'assignment';
-  readonly variableName: string;
-  readonly value: Value;
-}
-
-export interface Expression {
-  readonly type: 'expression';
-  readonly value: Value;
-}
-
-function isSingleton<A>(xs: A[], pred: (x: A) => boolean) {
-  return xs.length === 1 && pred(xs[0]);
-}
-
-function isFqn(fqn: string) {
-  return (x: ValueSource) => x.type === 'fqn' && x.fqn === fqn;
-}
-
-function isString(x: ValueSource) {
-  return x.type === 'primitive' && x.primitive === 'string';
 }

@@ -1,8 +1,10 @@
 import * as fs from 'fs-extra';
 import prand from 'pure-rand';
 import * as yargs from 'yargs';
+import { AwsBiaser } from './construction/aws-biaser';
 import { parseValueSources } from './construction/parse-values-sources';
 import { Planner } from './construction/plan';
+import { discretize } from './construction/statements';
 import { Synthesizer } from './construction/synth';
 
 async function main() {
@@ -59,16 +61,16 @@ async function main() {
       const model = await fs.readJson(args.input);
       const rng = prand.mersenne(args.seed ?? Date.now());
       const planner = new Planner(model, rng, {
-        useVariables: true,
+        biaser: new AwsBiaser(),
       });
-      const statements = planner.plan(args.FQN!);
-      console.log(JSON.stringify(statements, undefined, 2));
+      const value = planner.plan(args.FQN!);
+      console.log(JSON.stringify(value, undefined, 2));
 
       if (args.synth) {
         const synther = new Synthesizer({
           printStatements: true,
         });
-        const template = synther.synth(statements);
+        const template = synther.synth(discretize(value));
         console.log(JSON.stringify(template, undefined, 2));
       }
     })
