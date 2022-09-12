@@ -3,7 +3,7 @@ import prand from 'pure-rand';
 import * as yargs from 'yargs';
 import { AwsBiaser } from './construction/aws-biaser';
 import { parseValueSources } from './construction/parse-values-sources';
-import { Planner } from './construction/plan';
+import { MinimalValueGenerator } from './construction/plan';
 import { discretize } from './construction/statements';
 import { Synthesizer } from './construction/synth';
 
@@ -60,7 +60,7 @@ async function main() {
       console.log(args);
       const model = await fs.readJson(args.input);
       const rng = prand.mersenne(args.seed ?? Date.now());
-      const planner = new Planner(model, rng, {
+      const planner = new MinimalValueGenerator(model, rng, {
         biaser: new AwsBiaser(),
       });
       const value = planner.plan(args.FQN!);

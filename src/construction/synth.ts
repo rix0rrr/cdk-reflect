@@ -62,7 +62,8 @@ export class Synthesizer {
       case 'array':
         return plan.elements.map(e => this.evaluate(e));
       case 'object-literal':
-        return Object.fromEntries(Object.entries(plan.fields)
+      case 'map-literal':
+        return Object.fromEntries(Object.entries(plan.entries)
           .map(([k, v]) => [k, this.evaluate(v)]));
       case 'class-instantiation': {
         const type = resolveType(plan.fqn);

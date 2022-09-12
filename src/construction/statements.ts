@@ -34,9 +34,10 @@ export function discretize(value: Value): Statement[] {
   function recurse(x: Value): Value {
     switch (x.type) {
       case 'object-literal':
+      case 'map-literal':
         return withNesting(() => ({
-          type: 'object-literal',
-          fields: mapValues(x.fields, recurse),
+          ...x,
+          entries: mapValues(x.entries, recurse),
         }));
 
       case 'class-instantiation':

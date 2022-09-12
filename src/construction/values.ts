@@ -6,12 +6,15 @@ import { indent } from '../util';
 import { PrimitiveName } from './value-sources';
 
 export type Value =
+  // Compound values
   | ClassInstantiation
   | StaticMethodCall
-  | ObjectLiteral
+  | StructLiteral
+  | ArrayValue
+  | MapLiteral
+  // Scalar values
   | StaticPropertyAccess
   | PrimitiveValue
-  | ArrayValue
   | NoValue
   | ScopeValue
   | Variable
@@ -53,17 +56,21 @@ export interface StaticPropertyAccess {
 /**
  * Construct a value object
  */
-export interface ObjectLiteral {
+export interface StructLiteral {
   readonly type: 'object-literal';
-  readonly fields: Record<string, Value>;
+  readonly fqn: string;
+  readonly entries: Record<string, Value>;
+}
+
+export interface MapLiteral {
+  readonly type: 'map-literal';
+  readonly entries: Record<string, Value>;
 }
 
 export type PrimitiveValue =
   | MkPrimitiveValue<'string', string>
   | MkPrimitiveValue<'number', number>
   | MkPrimitiveValue<'boolean', boolean>
-  | MkPrimitiveValue<'json', any>
-  | MkPrimitiveValue<'any', any>
   | MkPrimitiveValue<'date', Date>
   ;
 
@@ -114,7 +121,8 @@ export function printValue(value: Value): string {
           ? '[\n' + els.map(e => indent(e)).join(',\n') + '\n]'
           : '[' + els.join(', ') + ']';
       case 'object-literal':
-        return '{\n' + Object.entries(x.fields)
+      case 'map-literal':
+        return '{\n' + Object.entries(x.entries)
           .map(([k, v]) => indent(`${k}: ${recurse(v)}`))
           .join(',\n')
           + '\n}';
