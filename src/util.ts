@@ -91,3 +91,11 @@ export function indent(x: string, ind: string = '  '): string {
 export function mapValues<A, B>(xs: Record<string, A>, fn: (x: A) => B): Record<string, B> {
   return Object.fromEntries(Object.entries(xs).map(([k, v]) => [k, fn(v)]));
 }
+
+export function range(n: number): number[] {
+  const ret = new Array<number>();
+  for (let i = 0; i < n; i++) {
+    ret.push(i);
+  }
+  return ret;
+}

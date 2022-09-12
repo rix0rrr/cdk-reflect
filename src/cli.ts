@@ -2,10 +2,12 @@ import * as fs from 'fs-extra';
 import prand from 'pure-rand';
 import * as yargs from 'yargs';
 import { AwsBiaser } from './construction/aws-biaser';
+import { MinimalValueGenerator, TypeSource } from './construction/minimal';
+import { ValueMutator } from './construction/mutate';
 import { parseValueSources } from './construction/parse-values-sources';
-import { MinimalValueGenerator } from './construction/plan';
-import { discretize } from './construction/statements';
+import { discretize, printStatement } from './construction/statements';
 import { Synthesizer } from './construction/synth';
+import { Value } from './construction/values';
 
 async function main() {
   await yargs
@@ -49,29 +51,40 @@ async function main() {
         type: 'boolean',
         describe: 'Synthesize the planned type',
         requiresArg: false,
+        default: false,
       })
       .option('seed', {
         alias: 'S',
         type: 'number',
         describe: 'PRNG seed',
         requiresArg: true,
+      })
+      .option('variants', {
+        alias: 'V',
+        type: 'number',
+        describe: 'How many variants to generate',
+        requiresArg: true,
+        default: 10,
       }),
     async (args) => {
-      console.log(args);
       const model = await fs.readJson(args.input);
-      const rng = prand.mersenne(args.seed ?? Date.now());
-      const planner = new MinimalValueGenerator(model, rng, {
-        biaser: new AwsBiaser(),
-      });
-      const value = planner.plan(args.FQN!);
-      console.log(JSON.stringify(value, undefined, 2));
+      const source = new TypeSource(model, { biaser: new AwsBiaser() });
 
-      if (args.synth) {
-        const synther = new Synthesizer({
-          printStatements: true,
-        });
-        const template = synther.synth(discretize(value));
-        console.log(JSON.stringify(template, undefined, 2));
+      const mini = new MinimalValueGenerator(source);
+      let value = mini.generate(args.FQN!);
+      printAndSynth(value, args.synth);
+
+      let rng = prand.mersenne(args.seed ?? Date.now());
+      for (let i = 0; i < args.variants; i++) {
+        const mutator = new ValueMutator(source, rng, { variants: 1 });
+
+        value = mutator.mutate(args.FQN!, value)[0];
+        if (!value) {
+          console.log('Could not find any more mutations');
+          break;
+        }
+        printAndSynth(value, args.synth);
+        rng = mutator.rng;
       }
     })
     .help()
@@ -117,6 +130,24 @@ function mkpad(n: number) {
   };
 }
 */
+
+function printAndSynth(value: Value, synth: boolean) {
+  console.log(JSON.stringify(value, undefined, 2));
+  const plan = discretize(value);
+
+  if (synth) {
+    const synther = new Synthesizer({
+      printStatements: true,
+    });
+    const template = synther.synth(discretize(value));
+    console.log(JSON.stringify(template, undefined, 2));
+  } else {
+    // Just print the discretized versions
+    for (const statement of plan) {
+      console.log(printStatement(statement));
+    }
+  }
+}
 
 main().catch(e => {
   console.error(e);

@@ -1,7 +1,7 @@
 import { classNameFromFqn } from '../util';
 import { BiaserContext, ISourceBiaser } from './biasing';
 import { isFqn, isSingleton, isString } from './value-source-predicates';
-import { ValueSource, FqnValueSource, ParameterSource } from './value-sources';
+import { ValueSource, ParameterSource } from './value-sources';
 import { Value } from './values';
 import { ClassInstantiationLoc, StaticMethodCallLoc, StructFieldLoc } from './zipper';
 
@@ -29,11 +29,6 @@ export class AwsBiaser implements ISourceBiaser {
     }
 
 
-    return sources;
-  }
-
-  public biasFqnValue(sources: FqnValueSource[], context: BiaserContext): FqnValueSource[] {
-    void(context);
     return sources;
   }
 

@@ -1,5 +1,5 @@
 import * as reflect from 'jsii-reflect';
-import { FqnValueSource, ParameterSource, ValueSource, ValueSources } from './value-sources';
+import { ParameterSource, ValueSource, ValueSources } from './value-sources';
 
 export interface ParseValueSourcesOptions {
   readonly assemblyLocations: string[];
@@ -68,6 +68,7 @@ class TypeSystemParser {
           fqn: klass.fqn,
           staticMethod: staticMethod.name,
           parameters: this.deriveParameters(staticMethod.parameters),
+          targetFqn: staticMethod.returns.type.fqn!,
         });
       }
     }
@@ -79,6 +80,7 @@ class TypeSystemParser {
           type: 'static-property',
           fqn: klass.fqn,
           staticProperty: staticProp.name,
+          targetFqn: staticProp.type.fqn!,
         });
       }
     }
@@ -93,6 +95,7 @@ class TypeSystemParser {
         type: 'static-property',
         fqn: enm.fqn,
         staticProperty: mem.name,
+        targetFqn: enm.fqn,
       });
     }
   }
@@ -155,7 +158,7 @@ class TypeSystemParser {
     return ret;
   }
 
-  private addSource(type: reflect.Type, source: FqnValueSource) {
+  private addSource(type: reflect.Type, source: ValueSource) {
     const fqns: string[] = [type.fqn];
 
     if (type.isClassType()) {

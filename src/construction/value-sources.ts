@@ -1,14 +1,20 @@
 import { Value } from './values';
 
 export interface ValueSources {
-  readonly types: Record<string, FqnValueSource[]>;
+  readonly types: Record<string, ValueSource[]>;
 }
 
-export type FqnValueSource =
+export type ValueSource =
   | ClassInstantiationSource
   | StaticMethodCallSource
   | ValueObjectSource
   | StaticPropertyAccessSource
+  | ConstantValueSource
+  | FqnReferenceSource
+  | PrimitiveValueSource
+  | NoValueSource
+  | ArrayValueSource
+  | MapValueSource
   | ConstantValueSource
   ;
 
@@ -34,6 +40,7 @@ export interface StaticMethodCallSource {
   readonly fqn: string;
   readonly staticMethod: string;
   readonly parameters: ParameterSource[];
+  readonly targetFqn: string;
 }
 
 /**
@@ -43,6 +50,7 @@ export interface StaticPropertyAccessSource {
   readonly type: 'static-property';
   readonly fqn: string;
   readonly staticProperty: string;
+  readonly targetFqn: string;
 }
 
 /**
@@ -53,15 +61,6 @@ export interface ValueObjectSource {
   readonly fqn: string;
   readonly fields: Record<string, ValueSource[]>;
 }
-
-export type ValueSource =
-  | FqnReferenceSource
-  | PrimitiveValueSource
-  | NoValueSource
-  | ArrayValueSource
-  | MapValueSource
-  | ConstantValueSource
-  ;
 
 export interface FqnReferenceSource {
   readonly type: 'fqn';

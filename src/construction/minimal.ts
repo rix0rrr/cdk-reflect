@@ -1,5 +1,5 @@
 import { ISourceBiaser } from './biasing';
-import { FqnValueSource, ParameterSource, PrimitiveName, ValueSource, ValueSources } from './value-sources';
+import { ParameterSource, PrimitiveName, ValueSource, ValueSources } from './value-sources';
 import { ClassInstantiation, StaticMethodCall, StructLiteral, Value } from './values';
 import { Zipper, zipperDescend } from './zipper';
 
@@ -14,17 +14,13 @@ export class TypeSource {
   constructor(private readonly sources: ValueSources, private readonly options: TypeSourceOptions = {}) {
   }
 
-  public fqnValueSources(fqn: string, loc: Zipper): FqnValueSource[] {
+  public lookupFqn(fqn: string): ValueSource[] {
     const sources = this.sources.types[fqn];
     if (!sources) { throw new Error(`Unknown type: '${fqn}'`); }
     if (sources.length === 0) {
       throw new Error(`No constructors for type: '${fqn}'`);
     }
-    const biased = this.options.biaser?.biasFqnValue(sources, loc) ?? sources;
-    if (biased.length === 0) {
-      throw new Error(`After biasing, no constructors for type: '${fqn}'`);
-    }
-    return biased;
+    return sources;
   }
 
   public valueSources(sources: ValueSource[], loc: Zipper): ValueSource[] {
@@ -50,22 +46,33 @@ export class MinimalValueGenerator {
   }
 
   private minimalFqnValue(fqn: string, loc: Zipper): Value {
-    const source = this.types.fqnValueSources(fqn, [])[0];
+    const sources = this.types.lookupFqn(fqn);
+    return this.minimalBiasedValue(sources, loc);
+  }
+
+
+  private minimalBiasedValue(sources: ValueSource[], loc: Zipper): Value {
+    return this.minimalValue(this.types.valueSources(sources, loc), loc);
+  }
+
+  public minimalValue(sources: ValueSource[], loc: Zipper): Value {
+    const source = sources[0];
 
     switch (source.type) {
       case 'class-instantiation': {
-        return this.fillMinimalArguments(this.types.parameterSources(fqn, source.parameters, loc), loc, {
+        return this.fillMinimalArguments(this.types.parameterSources(source.fqn, source.parameters, loc), loc, {
           type: 'class-instantiation',
           fqn: source.fqn,
           arguments: [],
         });
       }
       case 'static-method-call': {
-        return this.fillMinimalArguments(this.types.parameterSources(fqn, source.parameters, loc), loc, {
+        return this.fillMinimalArguments(this.types.parameterSources(source.fqn, source.parameters, loc), loc, {
           type: 'static-method-call',
           fqn: source.fqn,
           staticMethod: source.staticMethod,
           arguments: [],
+          targetFqn: source.targetFqn,
         });
       }
       case 'static-property':
@@ -73,6 +80,7 @@ export class MinimalValueGenerator {
           type: 'static-property',
           fqn: source.fqn,
           staticProperty: source.staticProperty,
+          targetFqn: source.targetFqn,
         };
       case 'value-object':
         return this.fillMinimalFields(source.fields, loc, {
@@ -82,13 +90,6 @@ export class MinimalValueGenerator {
         });
       case 'constant':
         return source.value;
-    }
-  }
-
-  private minimalValue(sources: ValueSource[], loc: Zipper): Value {
-    const source = this.types.valueSources(sources, loc)[0];
-
-    switch (source.type) {
       case 'no-value':
         return { type: 'no-value' };
       case 'fqn':
@@ -107,7 +108,7 @@ export class MinimalValueGenerator {
   private fillMinimalArguments(ps: ParameterSource[], loc: Zipper, baseValue: ClassInstantiation | StaticMethodCall): Value {
     for (let i = 0; i < ps.length; i++) {
       const p = ps[i];
-      const arg = this.minimalValue(p.value, zipperDescend(loc, baseValue, i));
+      const arg = this.minimalBiasedValue(p.value, zipperDescend(loc, baseValue, i));
       if (arg.type === 'no-value') { break; }
       baseValue.arguments.push({ name: p.name, value: arg });
     }
@@ -151,7 +152,7 @@ export class MinimalValueGenerator {
 
   private fillMinimalFields(fields: Record<string, ValueSource[]>, loc: Zipper, baseStruct: StructLiteral): Value {
     for (const [k, sources] of Object.entries(fields)) {
-      const value = this.minimalValue(sources, zipperDescend(loc, baseStruct, k));
+      const value = this.minimalBiasedValue(sources, zipperDescend(loc, baseStruct, k));
       if (value.type !== 'no-value') {
         baseStruct.entries[k] = value;
       }
@@ -159,3 +160,5 @@ export class MinimalValueGenerator {
     return baseStruct;
   }
 }
+
+export const ALPHABET_CHARS = '-abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01923456789 _:$';
