@@ -3,7 +3,7 @@
  */
 
 import { indent } from '../util';
-import { PrimitiveName, ValueSource } from './value-sources';
+import { PrimitiveName } from './distributions';
 
 export type Value =
   // Compound values
@@ -20,35 +20,52 @@ export type Value =
   | Variable
   ;
 
+export interface DistPtr {
+  /**
+   * What distribution this value was drawn from
+   */
+  readonly distId: string;
+
+  /**
+   * If the distribution contains multiple sources, its index
+   *
+   * If the distributions contains an "fqn" source, the index will be pointing to the splatted
+   * list with the fqn sources included.
+   */
+  readonly sourceIndex: number;
+}
+
+export interface ValueBase {
+  readonly distPtr: DistPtr;
+}
+
+
 /**
  * Instantiate a class via its constructor
  */
-export interface ClassInstantiation {
+export interface ClassInstantiation extends ValueBase {
   readonly type: 'class-instantiation';
   readonly fqn: string;
-  readonly arguments: Argument[];
+  readonly parameterNames: string[];
+  readonly arguments: Value[];
 };
 
 /**
  * Call a static method on a class
  */
-export interface StaticMethodCall {
+export interface StaticMethodCall extends ValueBase {
   readonly type: 'static-method-call';
   readonly fqn: string;
   readonly staticMethod: string;
-  readonly arguments: Argument[];
   readonly targetFqn: string;
-}
-
-export interface Argument {
-  readonly name: string;
-  readonly value: Value;
+  readonly parameterNames: string[];
+  readonly arguments: Value[];
 }
 
 /**
  * Access a static property on a class, or an enum value
  */
-export interface StaticPropertyAccess {
+export interface StaticPropertyAccess extends ValueBase {
   readonly type: 'static-property';
   readonly fqn: string;
   readonly staticProperty: string;
@@ -58,13 +75,13 @@ export interface StaticPropertyAccess {
 /**
  * Construct a value object
  */
-export interface StructLiteral {
+export interface StructLiteral extends ValueBase {
   readonly type: 'object-literal';
   readonly fqn: string;
   readonly entries: Record<string, Value>;
 }
 
-export interface MapLiteral {
+export interface MapLiteral extends ValueBase {
   readonly type: 'map-literal';
   readonly entries: Record<string, Value>;
 }
@@ -76,18 +93,18 @@ export type PrimitiveValue =
   | MkPrimitiveValue<'date', Date>
   ;
 
-export interface MkPrimitiveValue<N extends PrimitiveName, A> {
+export interface MkPrimitiveValue<N extends PrimitiveName, A> extends ValueBase {
   readonly type: 'primitive';
   readonly primitive: N;
   readonly value: A;
 }
 
-export interface ArrayValue {
+export interface ArrayValue extends ValueBase {
   readonly type: 'array';
   readonly elements: Value[];
 }
 
-export interface NoValue {
+export interface NoValue extends ValueBase {
   readonly type: 'no-value';
 }
 
@@ -96,8 +113,12 @@ export interface Variable {
   readonly variableName: string;
 }
 
-export interface ScopeValue {
+export interface ScopeValue extends ValueBase {
   readonly type: 'scope';
+}
+
+export function isCallableValue(x: Value): x is ClassInstantiation | StaticMethodCall {
+  return x.type === 'class-instantiation' || x.type === 'static-method-call';
 }
 
 export function printValue(value: Value): string {
@@ -129,9 +150,9 @@ export function printValue(value: Value): string {
           .join(',\n')
           + '\n}';
       case 'class-instantiation':
-        return `new ${x.fqn}(${x.arguments.map(a => recurse(a.value)).join(', ')})`;
+        return `new ${x.fqn}(${x.arguments.map(recurse).join(', ')})`;
       case 'static-method-call':
-        return `${x.fqn}.${x.staticMethod}(${x.arguments.map(a => recurse(a.value)).join(', ')})`;
+        return `${x.fqn}.${x.staticMethod}(${x.arguments.map(recurse).join(', ')})`;
     }
   }
 }
@@ -173,33 +194,5 @@ export function valueEquals(a: Value, b: Value): boolean {
       return a.fqn === b.fqn && a.staticMethod === b.staticMethod;
     case 'static-property':
       return a.type === b.type && a.fqn === b.fqn && a.staticProperty === b.staticProperty;
-  }
-}
-
-export function valueIsFromSource(value: Value, source: ValueSource): boolean {
-  switch (source.type) {
-    case 'constant':
-      return valueEquals(value, source.value);
-    case 'array':
-      return value.type === 'array' && source.elements.some(e => valueIsFromSource(value, e));
-    case 'class-instantiation':
-      return value.type === 'class-instantiation' && value.fqn === source.fqn;
-    case 'map':
-      return value.type === 'map-literal' && Object.values(value.entries).every(el => source.elements.every(s => valueIsFromSource(el, s)));
-    case 'no-value':
-      return false;
-    case 'primitive':
-      return value.type === 'primitive' && value.primitive === source.primitive;
-    case 'static-method-call':
-      return value.type === 'static-method-call' && value.fqn === source.fqn && value.staticMethod === source.staticMethod;
-    case 'static-property':
-      return value.type === 'static-property' && value.fqn === source.fqn && value.staticProperty === source.staticProperty;
-    case 'value-object':
-      return value.type === 'object-literal' && value.fqn === source.fqn;
-    case 'fqn':
-      return ((value.type === 'class-instantiation' && value.fqn === source.fqn)
-        || (value.type === 'static-method-call' && value.targetFqn === source.fqn)
-        || (value.type === 'object-literal' && value.fqn === source.fqn)
-        || (value.type === 'static-property' && value.targetFqn === source.fqn));
   }
 }

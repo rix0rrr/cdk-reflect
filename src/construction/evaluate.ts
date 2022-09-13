@@ -3,7 +3,7 @@ import { assertSwitchIsExhaustive } from '../util';
 import { printStatement, Statement } from './statements';
 import { Value } from './values';
 
-export interface SynthesizerOptions {
+export interface EvaluatorOptions {
   /**
    * Print statements as they're being evaluated
    *
@@ -12,13 +12,13 @@ export interface SynthesizerOptions {
   readonly printStatements?: boolean;
 }
 
-export class Synthesizer {
+export class Evaluator {
   private readonly app = new App();
   private readonly stack = new Stack(this.app, 'Stack');
   private readonly variables = new Map<string, any>();
   public readonly statements = new Array<string>();
 
-  constructor(private readonly options: SynthesizerOptions = {}) {
+  constructor(private readonly options: EvaluatorOptions = {}) {
   }
 
   public synth(plan: Statement[]): any {
@@ -54,7 +54,7 @@ export class Synthesizer {
   private evaluate(plan: Value): any {
     switch (plan.type) {
       case 'no-value':
-        throw new Error('no-value cannot be evaluated');
+        return undefined;
       case 'primitive':
         return plan.value;
       case 'scope':
@@ -68,14 +68,14 @@ export class Synthesizer {
       case 'class-instantiation': {
         const type = resolveType(plan.fqn);
         assertCallable(type);
-        const args = plan.arguments.map(a => this.evaluate(a.value));
+        const args = plan.arguments.map(a => this.evaluate(a));
         return Reflect.construct(type, args);
       }
       case 'static-method-call': {
         const type = resolveType(plan.fqn);
         const fn = type[plan.staticMethod];
         assertCallable(type);
-        const args = plan.arguments.map(a => this.evaluate(a.value));
+        const args = plan.arguments.map(a => this.evaluate(a));
         return Reflect.apply(fn, type, args);
       }
       case 'static-property': {

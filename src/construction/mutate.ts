@@ -1,11 +1,11 @@
-import prand from 'pure-rand';
-import { range } from '../util';
-import { ALPHABET_CHARS, MinimalValueGenerator, TypeSource } from './minimal';
-import { ValueSource } from './value-sources';
-import { Value, valueIsFromSource } from './values';
-import { Zipper, zipperDelete, zipperDescend, zipperSet } from './zipper';
+import { assertSwitchIsExhaustive, range } from '../util';
+import { DistributionRef, ResolvedValueSource, ValueModel } from './distributions';
+import { ALPHABET_CHARS, ValueGenerator, GeneratorOptions } from './generate';
+import { Random } from './random';
+import { Zipper, zipperDelete, zipperDescend, zipperSet } from './value-zipper';
+import { DistPtr, PrimitiveValue, Value } from './values';
 
-export interface MutatorOptions {
+export interface MutatorOptions extends GeneratorOptions {
   /**
    * How many variants to generate
    *
@@ -14,20 +14,20 @@ export interface MutatorOptions {
   readonly variants?: number;
 }
 
-export class ValueMutator {
+export class ValueMutator extends ValueGenerator {
   private readonly proposedMutations: Mutation[];
   private n = 0;
   private readonly k: number;
-  private readonly minimal: MinimalValueGenerator;
 
-  constructor(private readonly types: TypeSource, public rng: prand.RandomGenerator, options: MutatorOptions = {}) {
+  constructor(model: ValueModel, random: Random, options: MutatorOptions = {}) {
+    super(model, random, options);
+
     this.k = options.variants ?? 1;
     this.proposedMutations = new Array(this.k);
-    this.minimal = new MinimalValueGenerator(types);
   }
 
-  public mutate(fqn: string, value: Value): Value[] {
-    this.mutateFqnValue(fqn, value, []);
+  public mutate(value: Value): Value[] {
+    this.mutateValue(value, []);
     return this.proposedMutations.map(applyMutation);
   }
 
@@ -35,8 +35,7 @@ export class ValueMutator {
    * Use reservoir sampling to hold on to each proposed value with equal chance
    */
   private proposeMutation(v: Mutation) {
-    const [x, rng] = prand.uniformIntDistribution(0, this.n++)(this.rng);
-    this.rng = rng;
+    const x = this.random.pickNr(0, this.n++);
     if (x < this.k) {
       this.proposedMutations[x] = v;
     }
@@ -50,24 +49,21 @@ export class ValueMutator {
     this.proposeMutation({ mutation: 'delete', zipper });
   }
 
-  private mutateFqnValue(fqn: string, value: Value, loc: Zipper) {
-    const sources = this.types.lookupFqn(fqn);
-    this.mutateValue(value, sources, loc);
-  }
+  private mutateValue(value: Value, zipper: Zipper) {
+    // One possible mutation: use a different source from the same distribution
+    let currentSource: ResolvedValueSource | undefined;
 
-  private mutateValue(value: Value, sources: ValueSource[], zipper: Zipper) {
-    const biasedSources = this.types.valueSources(sources, zipper);
+    if (valueHasDistPtr(value)) {
+      const sources = this.query.resolveDist(value.distPtr);
+      currentSource = sources[value.distPtr.sourceIndex];
 
-    const currentSource = biasedSources.find(s => valueIsFromSource(value, s));
-
-    // One possible mutation: use a different source
-    for (const source of biasedSources) {
-      if (source !== currentSource) {
-        this.proposeSet(zipper, this.minimal.minimalValue([source], zipper));
-      }
+      sources.forEach((source, i) => {
+        if (i !== value.distPtr.sourceIndex) {
+          const newDistPtr = { distId: value.distPtr.distId, sourceIndex: i };
+          this.proposeSet(zipper, this.minimalValueFromSource(source, newDistPtr, zipper));
+        }
+      });
     }
-
-    // FIXME: think about source.type == fqn here!!!!
 
     switch (value.type) {
       // Nothing about the access itself to mutate here.
@@ -79,19 +75,37 @@ export class ValueMutator {
         return;
 
       case 'array': {
-        if (currentSource?.type !== 'array') { break; }
-
-        // Add an element
-        const addZipper = zipperDescend(zipper, value, value.elements.length);
-        this.proposeSet(addZipper, this.minimal.minimalValue(currentSource.elements, addZipper));
+        if (currentSource?.type === 'array') {
+          // Add an element
+          this.proposeNewMinimalValue(zipperDescend(zipper, value, value.elements.length), currentSource.elements);
+        }
 
         if (value.elements.length > 0) {
           // Remove or mutate an element
-          const i = this.pickNr(0, value.elements.length - 1);
+          const i = this.random.pickNr(0, value.elements.length - 1);
           const elZipper = zipperDescend(zipper, value, i);
 
           this.proposeDelete(elZipper);
-          this.mutateValue(value.elements[i], currentSource.elements, elZipper);
+          this.mutateValue(value.elements[i], elZipper);
+        }
+        break;
+      }
+
+      case 'map-literal': {
+        if (currentSource?.type === 'map') {
+          // Add, remove, or mutate a key
+          const newKey = this.random.generateString(1, 10, ALPHABET_CHARS);
+          this.proposeNewMinimalValue(zipperDescend(zipper, value, newKey), currentSource.elements);
+        }
+
+        const keys = Object.keys(value.entries);
+        if (keys.length > 0) {
+          // Remove or mutate an element
+          const randomKey = this.random.pickFrom(keys);
+          const elZipper = zipperDescend(zipper, value, randomKey);
+
+          this.proposeDelete(elZipper);
+          this.mutateValue(value.entries[randomKey], elZipper);
         }
         break;
       }
@@ -103,17 +117,17 @@ export class ValueMutator {
         // Add an argument if possible
         if (value.arguments.length < currentSource.parameters.length) {
           const newArgZipper = zipperDescend(zipper, value, value.arguments.length);
-          this.proposeSet(newArgZipper, this.minimal.minimalValue(currentSource.parameters[value.arguments.length].value, newArgZipper));
+          this.proposeSet(newArgZipper, this.minimalValue(currentSource.parameters[value.arguments.length].dist, newArgZipper));
         }
 
         // Find an argument to mutate (if (this.didMutate(...)) }
         if (value.arguments.length > 0) {
-          const args = this.shuffleMutate(range(value.arguments.length));
+          const args = this.random.shuffleMutate(range(value.arguments.length));
 
           for (const arg of args) {
             const didP = this.didPropose(() => {
               const elZipper = zipperDescend(zipper, value, arg);
-              this.mutateValue(value.arguments[arg].value, currentSource.parameters[arg].value, elZipper);
+              this.mutateValue(value.arguments[arg], elZipper);
             });
 
             if (didP) { break; }
@@ -123,108 +137,22 @@ export class ValueMutator {
         break;
       }
 
-      case 'object-literal': {
-        if (currentSource?.type !== 'value-object') { return; }
-
-        // Pick a random key and mutate it
-        const keys = Object.keys(currentSource.fields);
-        if (keys.length > 0) {
-          const pickedKey = this.pickFrom(keys);
-
-          const elZipper = zipperDescend(zipper, value, pickedKey);
-          this.mutateValue(
-            value.entries[pickedKey] ?? { type: 'no-value' },
-            currentSource.fields[pickedKey],
-            elZipper);
+      case 'object-literal':
+        // Randomly mutate all keys
+        for (const [key, entryValue] of Object.entries(value.entries)) {
+          const elZipper = zipperDescend(zipper, value, key);
+          this.mutateValue(entryValue, elZipper);
         }
         break;
-      }
 
       case 'primitive':
-        // Change the value of the primitive
-        switch (value.primitive) {
-          case 'boolean':
-            this.proposeSet(zipper, { type: 'primitive', primitive: 'boolean', value: !value.value });
-            break;
-          case 'number': {
-            // Mutate the number, keeping it an int because most numbers need to be ints
-            const opnd = this.pickNr(1, 5);
-            const op = this.pickFrom(['+', '-', '*', '/'] as Array<'+'|'-'|'*'|'/'>);
+        const newValue = this.mutatePrimitiveValue(value);
+        this.proposeSet(zipper, { ...value, value: newValue as any });
+        break;
 
-            let newValue: number;
-            switch (op) {
-              case '+': newValue = value.value + opnd; break;
-              case '-': newValue = value.value - opnd; break;
-              case '/': newValue = Math.round(value.value / opnd); break;
-              case '*': newValue = value.value * opnd; break;
-            }
-
-            this.proposeSet(zipper, { type: 'primitive', primitive: 'number', value: newValue });
-            break;
-          }
-          case 'string': {
-            // Mutate the string
-            const op = this.pickFrom(['slice', 'prepend', 'append'] as Array<'slice'|'prepend'|'append'>);
-            let newValue;
-            switch (op) {
-              case 'prepend':
-              case 'append':
-                const str = this.generateString(1, 4, ALPHABET_CHARS);
-
-                newValue = op === 'prepend' ? str + value.value : value.value + str;
-                break;
-              case 'slice':
-                if (value.value.length > 0) {
-                  const i = this.pickNr(0, value.value.length);
-                  const len = this.pickNr(0, value.value.length - i);
-
-                  newValue = value.value.substring(0, i) + value.value.substring(i + len);
-                }
-                break;
-            }
-            if (newValue) {
-              this.proposeSet(zipper, { type: 'primitive', primitive: 'string', value: newValue });
-            }
-          }
-        }
+      default:
+        assertSwitchIsExhaustive(value);
     }
-  }
-
-  private pickFrom<A>(xs: A[]): A {
-    if (xs.length === 0) {
-      throw new Error('Cannot pick from empty array');
-    }
-
-    const i = this.pickNr(0, xs.length - 1);
-    return xs[i];
-  }
-
-  private pickNr(lo: number, hi: number): number {
-    const [i, rng] = prand.uniformIntDistribution(lo, hi)(this.rng);
-    this.rng = rng;
-    return i;
-  }
-
-  private generateString(minlen: number, maxlen: number, alphabet: string) {
-    const ret = new Array<string>();
-    const len = this.pickNr(minlen, maxlen);
-    for (let i = 0; i < len; i++) {
-      ret.push(alphabet[this.pickNr(0, alphabet.length - 1)]);
-    }
-    return ret.join('');
-  }
-
-  /**
-   * Fisher-Yates shuffle an array IN PLACE
-   */
-  private shuffleMutate<A>(xs: A[]): A[] {
-    for (let i = xs.length - 1; i >= 1; i--) {
-      const j = this.pickNr(0, i);
-      const h = xs[i];
-      xs[i] = xs[j];
-      xs[j] = h;
-    }
-    return xs;
   }
 
   /**
@@ -234,6 +162,49 @@ export class ValueMutator {
     const start = this.n;
     block();
     return this.n > start;
+  }
+
+  private proposeNewMinimalValue(zipper: Zipper, distRef: DistributionRef) {
+    this.proposeSet(zipper, this.minimalValue(distRef, zipper));
+  }
+
+  private mutatePrimitiveValue<A extends PrimitiveValue>(primitive: A): A['value'] {
+    switch (primitive.primitive) {
+      case 'boolean':
+        return !primitive.value;
+      case 'number': {
+        // Mutate the number, keeping it an int because most numbers need to be ints
+        const opnd = this.random.pickNr(1, 5);
+        const op = this.random.pickFrom(['+', '-', '*', '/'] as Array<'+'|'-'|'*'|'/'>);
+
+        switch (op) {
+          case '+': return primitive.value + opnd;
+          case '-': return primitive.value - opnd;
+          case '/': return Math.round(primitive.value / opnd);
+          case '*': return primitive.value * opnd;
+        }
+      }
+      case 'string': {
+        // Mutate the string
+        const op = this.random.pickFrom(['slice', 'prepend', 'append'] as Array<'slice'|'prepend'|'append'>);
+        switch (op) {
+          case 'prepend':
+          case 'append':
+            const str = this.random.generateString(1, 4, ALPHABET_CHARS);
+
+            return op === 'prepend' ? str + primitive.value : primitive.value + str;
+          case 'slice':
+            if (primitive.value.length > 0) {
+              const i = this.random.pickNr(0, primitive.value.length);
+              const len = this.random.pickNr(0, primitive.value.length - i);
+
+              return primitive.value.substring(0, i) + primitive.value.substring(i + len);
+            }
+        }
+      }
+    }
+
+    return primitive.value;
   }
 }
 
@@ -260,4 +231,8 @@ function applyMutation(m: Mutation): Value {
     case 'delete':
       return zipperDelete(m.zipper);
   }
+}
+
+function valueHasDistPtr(v: Value): v is Extract<Value, { distPtr: DistPtr }> {
+  return v.type !== 'variable';
 }

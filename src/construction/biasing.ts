@@ -1,9 +1,5 @@
-import { ParameterSource, ValueSource } from './value-sources';
-import { ValueLoc } from './zipper';
+import { FqnSource, ValueModel } from './distributions';
 
 export interface ISourceBiaser {
-  biasArguments(fqn: string, parameters: ParameterSource[], context: BiaserContext): ParameterSource[];
-  biasValue(sources: ValueSource[], context: BiaserContext): ValueSource[];
+  biasFqnSource(source: FqnSource, model: ValueModel): FqnSource;
 }
-
-export type BiaserContext = ValueLoc[];

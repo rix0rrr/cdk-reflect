@@ -1,22 +1,52 @@
 import { Value } from './values';
 
-export interface ValueSources {
-  readonly types: Record<string, ValueSource[]>;
+export interface ValueModel {
+  /**
+   * All distributions to draw values from.
+   *
+   * Class distributions will be identified with their FQN (because those are
+   * mutable over the course of crawling the model), while value type distributions
+   * are identified by their content hash.
+   */
+  readonly fqnSources: Record<string, FqnSource[]>;
+  readonly distributions: Record<string, ValueDistribution>;
 }
 
-export type ValueSource =
+/**
+ * Distribution where values are being drawn from
+ */
+export type FqnSource =
+  // FQN distributions
   | ClassInstantiationSource
   | StaticMethodCallSource
   | ValueObjectSource
   | StaticPropertyAccessSource
-  | ConstantValueSource
-  | FqnReferenceSource
+  ;
+
+export type ValueDistribution = ValueSource[];
+
+export type ValueSource =
   | PrimitiveValueSource
   | NoValueSource
   | ArrayValueSource
   | MapValueSource
   | ConstantValueSource
+  | IncludeFqnSources
+  | CustomSource
   ;
+
+export type ResolvedValueSource = FqnSource | Exclude<ValueSource, IncludeFqnSources>;
+export type ResolvedValueDistribution = ResolvedValueSource[];
+
+
+// Distribution is a pair of (name, [ValueSource, ...])
+// Custom distributions: Scope, ConstructName, Arn, ...(etc)...
+// Every distribution: drawMinimalValue(), mutateValue()
+// Every mutation:
+//    - Pick different distribution; OR
+//    - Mutate value from distribution
+
+// Distribution and reference to distribution are 2 differen things
 
 /**
  * Instantiate a class via its constructor
@@ -29,7 +59,7 @@ export interface ClassInstantiationSource {
 
 export interface ParameterSource {
   readonly name: string;
-  readonly value: ValueSource[];
+  readonly dist: DistributionRef;
 }
 
 /**
@@ -59,12 +89,11 @@ export interface StaticPropertyAccessSource {
 export interface ValueObjectSource {
   readonly type: 'value-object';
   readonly fqn: string;
-  readonly fields: Record<string, ValueSource[]>;
+  readonly fields: Record<string, DistributionRef>;
 }
 
-export interface FqnReferenceSource {
-  readonly type: 'fqn';
-  readonly fqn: string;
+export interface DistributionRef {
+  readonly distId: string;
 }
 
 export interface NoValueSource {
@@ -80,15 +109,25 @@ export type PrimitiveName = 'string' | 'number' | 'boolean' | 'json' | 'date' | 
 
 export interface ArrayValueSource {
   readonly type: 'array';
-  readonly elements: ValueSource[];
+  readonly elements: DistributionRef;
 }
 
 export interface MapValueSource {
   readonly type: 'map';
-  readonly elements: ValueSource[];
+  readonly elements: DistributionRef;
 }
 
 export interface ConstantValueSource {
   readonly type: 'constant';
   readonly value: Value;
+}
+
+export interface IncludeFqnSources {
+  readonly type: 'fqn';
+  readonly fqn: string;
+}
+
+export interface CustomSource {
+  readonly type: 'custom';
+  readonly sourceName: string;
 }

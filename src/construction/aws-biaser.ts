@@ -1,9 +1,10 @@
 import { classNameFromFqn } from '../util';
-import { BiaserContext, ISourceBiaser } from './biasing';
-import { isFqn, isSingleton, isString } from './value-source-predicates';
-import { ValueSource, ParameterSource } from './value-sources';
-import { Value } from './values';
-import { ClassInstantiationLoc, StaticMethodCallLoc, StructFieldLoc } from './zipper';
+import { ISourceBiaser } from './biasing';
+import { ICustomDistribution } from './custom-distribution';
+import { DistributionOps } from './distribution-ops';
+import { ParameterSource, FqnSource, ValueModel, DistributionRef } from './distributions';
+import { isSingleton, isString, stringPrim } from './value-helpers';
+import { isCallableValue } from './values';
 
 /**
  * A biaser that will try to do well for AWS CDK queries
@@ -11,55 +12,88 @@ import { ClassInstantiationLoc, StaticMethodCallLoc, StructFieldLoc } from './zi
  * FIXME: weighting
  */
 export class AwsBiaser implements ISourceBiaser {
-  public biasArguments(fqn: string, parameters: ParameterSource[]): ParameterSource[] {
-    if (this.isConstructParameters(parameters)) {
-      return [
-        { name: parameters[0].name, value: [constant({ type: 'scope' })] },
-        { name: parameters[1].name, value: [constant(stringPrim(`My${classNameFromFqn(fqn)}`))] },
-        ...parameters.slice(2),
-      ];
+  public biasFqnSource(source: FqnSource, model: ValueModel): FqnSource {
+    const ops = new DistributionOps(model);
+
+    switch (source.type) {
+      case 'class-instantiation':
+      case 'static-method-call':
+        // Given opportunity to bias all params
+        const parameters = source.parameters;
+
+        source = {
+          ...source,
+          parameters: parameters.map(p => this.biasParameter(p, ops, parameters)),
+        };
+        break;
+      case 'value-object':
+        source = {
+          ...source,
+          fields: Object.fromEntries(Object.entries(source.fields)
+            .map(([k, v]) => [k, this.biasValue(k, v, ops)])),
+        };
+        break;
     }
 
-    return parameters;
+    return source;
   }
 
-  public biasValue(sources: ValueSource[], context: BiaserContext): ValueSource[] {
-    if (isSingleton(sources, isString) && argumentName(context)?.includes('Arn')) {
-      return [constant(stringPrim('arn:aws:service:region:account-id:resource-type/resource-id'))];
+  private biasParameter(p: ParameterSource, ops: DistributionOps, ps: ParameterSource[]): ParameterSource {
+    if (isScopeParameter(p, ops)) {
+      return {
+        name: p.name,
+        dist: ops.recordDistribution([{ type: 'custom', sourceName: 'scope' }]),
+      };
     }
 
+    if (isStringParameter(p, ops) && isScopeParameter(ps[0], ops)) {
+      // If this a string that goes with a scope
+      return {
+        name: p.name,
+        dist: ops.recordDistribution([{ type: 'custom', sourceName: 'constructId' }]),
+      };
+    }
 
-    return sources;
+    return {
+      name: p.name,
+      dist: this.biasValue(p.name, p.dist, ops),
+    };
   }
 
-  private isConstructParameters(ps: ParameterSource[]) {
-    return (ps.length >= 2
-      && ps[0].name === 'scope' && isSingleton(ps[0].value, isFqn('constructs.Construct'))
-      && isSingleton(ps[1].value, isString));
-  }
-}
+  private biasValue(valueName: string, ref: DistributionRef, ops: DistributionOps): DistributionRef {
+    const dist = ops.lookupDist(ref);
 
-function argumentName(context: BiaserContext): string | undefined {
-  const record = context
-    .filter((x): x is ClassInstantiationLoc | StaticMethodCallLoc | StructFieldLoc => x.type === 'class-instantiation' || x.type === 'static-method-call' || x.type === 'struct-field')
-    [0];
+    if (isSingleton(dist, isString) && valueName.toLowerCase().includes('arn')) {
+      return ops.recordDistribution([{ type: 'custom', sourceName: 'arn' }]);
+    }
 
-  if (!record) { return undefined; }
-  switch (record.type) {
-    case 'class-instantiation':
-    case 'static-method-call':
-      const index = record.argumentIndex;
-      return record.ptr.arguments[index].name;
-
-    case 'struct-field':
-      return record.fieldName;
+    return ref;
   }
 }
 
-function constant(value: Value): ValueSource {
-  return { type: 'constant', value };
+function isScopeParameter(param: ParameterSource, ops: DistributionOps) {
+  return param.name === 'scope' && ops.distIncludesFqn(param.dist, 'constructs.Construct');
 }
 
-function stringPrim(value: string): Value {
-  return { type: 'primitive', primitive: 'string', value };
+function isStringParameter(param: ParameterSource, ops: DistributionOps) {
+  return isSingleton(ops.lookupDist(param.dist), isString);
 }
+
+export const AWS_CUSTOM_DISTRIBUTIONS: Record<string, ICustomDistribution> = {
+  scope: {
+    minimalValue(distPtr) {
+      return { type: 'scope', distPtr };
+    },
+  },
+  constructId: {
+    minimalValue(distPtr, zipper) {
+      const id = isCallableValue(zipper[0].ptr) ? `My${classNameFromFqn(zipper[0].ptr.fqn)}` : 'MyConstruct';
+      return stringPrim(id, distPtr);
+    },
+  },
+  arn: {
+    minimalValue(distPtr) {
+      return stringPrim('arn:aws:service:region:account-id:resource-type/resource-id', distPtr);
+    },
+  },
+};

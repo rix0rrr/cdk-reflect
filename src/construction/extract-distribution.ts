@@ -1,15 +1,19 @@
 import * as reflect from 'jsii-reflect';
-import { ParameterSource, ValueSource, ValueSources } from './value-sources';
+import { ISourceBiaser } from './biasing';
+import { DistributionOps } from './distribution-ops';
+import { ParameterSource, ValueSource, ValueModel, ValueDistribution, FqnSource, DistributionRef } from './distributions';
 
-export interface ParseValueSourcesOptions {
+export interface DistributionExtractorOptions {
   readonly assemblyLocations: string[];
+
+  readonly biaser?: ISourceBiaser;
 }
 
-export interface ParseValueSourcesResult {
-  readonly model: ValueSources;
+export interface DistrubtionExtractorResult {
+  readonly model: ValueModel;
 }
 
-export async function parseValueSources(options: ParseValueSourcesOptions): Promise<ParseValueSourcesResult> {
+export async function parseValueSources(options: DistributionExtractorOptions): Promise<DistrubtionExtractorResult> {
   const ts = new reflect.TypeSystem();
 
   // load all assemblies into typesystem
@@ -17,7 +21,7 @@ export async function parseValueSources(options: ParseValueSourcesOptions): Prom
     await ts.load(assLoc, { validate: false });
   }
 
-  const parser = new TypeSystemParser(ts);
+  const parser = new DistributionExtractor(ts, options);
   parser.parse();
 
   return {
@@ -25,13 +29,16 @@ export async function parseValueSources(options: ParseValueSourcesOptions): Prom
   };
 }
 
-class TypeSystemParser {
-  public readonly model: ValueSources;
+class DistributionExtractor {
+  public readonly model: ValueModel;
+  private readonly ops: DistributionOps;
 
-  constructor(private readonly ts: reflect.TypeSystem) {
+  constructor(private readonly ts: reflect.TypeSystem, private readonly options: DistributionExtractorOptions) {
     this.model = {
-      types: {},
+      fqnSources: {},
+      distributions: {},
     };
+    this.ops = new DistributionOps(this.model);
   }
 
   public parse() {
@@ -52,7 +59,7 @@ class TypeSystemParser {
   private visitClass(klass: reflect.ClassType) {
     // Can this class be instantiated via constructor?
     if (!klass.abstract && klass.initializer && !klass.initializer.protected) {
-      this.addSource(klass, {
+      this.addFqnSource(klass, {
         type: 'class-instantiation',
         fqn: klass.fqn,
         parameters: this.deriveParameters(klass.initializer.parameters),
@@ -63,7 +70,7 @@ class TypeSystemParser {
     // as constructors for those types
     for (const staticMethod of klass.ownMethods.filter(m => m.static)) {
       if (staticMethod.returns.type.type) {
-        this.addSource(staticMethod.returns.type.type, {
+        this.addFqnSource(staticMethod.returns.type.type, {
           type: 'static-method-call',
           fqn: klass.fqn,
           staticMethod: staticMethod.name,
@@ -76,7 +83,7 @@ class TypeSystemParser {
     // Same for props
     for (const staticProp of klass.ownProperties.filter(m => m.static)) {
       if (staticProp.type.type) {
-        this.addSource(staticProp.type.type, {
+        this.addFqnSource(staticProp.type.type, {
           type: 'static-property',
           fqn: klass.fqn,
           staticProperty: staticProp.name,
@@ -91,7 +98,7 @@ class TypeSystemParser {
    */
   private visitEnum(enm: reflect.EnumType) {
     for (const mem of enm.members) {
-      this.addSource(enm, {
+      this.addFqnSource(enm, {
         type: 'static-property',
         fqn: enm.fqn,
         staticProperty: mem.name,
@@ -101,11 +108,11 @@ class TypeSystemParser {
   }
 
   private visitStruct(struct: reflect.InterfaceType) {
-    this.addSource(struct, {
+    this.addFqnSource(struct, {
       type: 'value-object',
       fqn: struct.fqn,
       fields: Object.fromEntries(struct.allProperties.map(p =>
-        [p.name, this.deriveValue(p.type, p.optional)])),
+        [p.name, this.deriveDistRef(p.type, p.optional)])),
     });
   }
 
@@ -113,53 +120,59 @@ class TypeSystemParser {
     // FIXME: Variadic parameters
     return parameters.map(p => ({
       name: p.name,
-      value: this.deriveValue(p.type, p.optional),
+      dist: this.deriveDistRef(p.type, p.optional),
     }));
   }
 
-  private deriveValue(type: reflect.TypeReference, optional: boolean): ValueSource[] {
-    const ret: ValueSource[] = [];
+  private deriveDistRef(type: reflect.TypeReference, optional: boolean): DistributionRef {
+    return this.ops.recordDistribution(this.deriveDistribution(type, optional));
+  }
+
+  private deriveDistribution(type: reflect.TypeReference, optional: boolean): ValueDistribution {
+    const dist: ValueSource[] = [];
     if (optional) {
-      ret.push({ type: 'no-value' });
+      dist.push({ type: 'no-value' });
     }
 
     if (type.arrayOfType) {
-      ret.push({
+      dist.push({
         type: 'array',
-        elements: this.deriveValue(type.arrayOfType, false),
+        elements: this.deriveDistRef(type.arrayOfType, false),
       });
     }
 
     if (type.mapOfType) {
-      ret.push({
+      dist.push({
         type: 'map',
-        elements: this.deriveValue(type.mapOfType, false),
+        elements: this.deriveDistRef(type.mapOfType, false),
       });
     }
 
     if (type.unionOfTypes) {
-      ret.push(...type.unionOfTypes.flatMap(t => this.deriveValue(t, false)));
+      dist.push(...type.unionOfTypes.flatMap(t => this.deriveDistribution(t, false)));
     }
 
     if (type.fqn) {
-      ret.push({
+      dist.push({
         type: 'fqn',
         fqn: type.fqn,
       });
     }
 
     if (type.primitive) {
-      ret.push({
+      dist.push({
         type: 'primitive',
         primitive: type.primitive as any, // Force this
       });
     }
 
-    return ret;
+    return dist;
   }
 
-  private addSource(type: reflect.Type, source: ValueSource) {
+  private addFqnSource(type: reflect.Type, source: FqnSource) {
     const fqns: string[] = [type.fqn];
+
+    source = this.options.biaser?.biasFqnSource(source, this.model) ?? source;
 
     if (type.isClassType()) {
       // If we are able to instantiate this class, it will count for the current
@@ -171,13 +184,12 @@ class TypeSystemParser {
     }
 
     for (const fqn of fqns) {
-      if (!this.model.types[fqn]) {
-        this.model.types[fqn] = [];
+      if (!this.model.fqnSources[fqn]) {
+        this.model.fqnSources[fqn] = [];
       }
-      this.model.types[fqn].push(source);
+      this.model.fqnSources[fqn].push(source);
     }
   }
-
 }
 
 export interface Diagnostic {

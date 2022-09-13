@@ -26,12 +26,23 @@ export function discretize(value: Value): Statement[] {
   let nestingLevel = 0;
 
   const v = recurse(value);
+
+  // If we end on a variable, find the variable assignment and replace it with just the value
+  if (v.type === 'variable') {
+    return statements.map(s => s.type === 'assignment' && s.variableName === v.variableName
+      ? { type: 'expression', value: s.value }
+      : s);
+  }
+
   return [
     ...statements,
     { type: 'expression', value: v },
   ];
 
   function recurse(x: Value): Value {
+    if (x === undefined) {
+      debugger;
+    }
     switch (x.type) {
       case 'object-literal':
       case 'map-literal':
@@ -41,17 +52,22 @@ export function discretize(value: Value): Statement[] {
         }));
 
       case 'class-instantiation':
+        return extract({
+          ...x,
+          arguments: x.arguments.map(recurse),
+        }, x.fqn);
+
       case 'static-method-call':
         // FIXME: For static method calls this gives the wrong name
         const namingHint = x.fqn;
         return maybeExtract({
           ...x,
-          arguments: x.arguments.map(a => ({ name: a.name, value: recurse(a.value) })),
+          arguments: x.arguments.map(recurse),
         }, namingHint);
 
       case 'array':
         return {
-          type: 'array',
+          ...x,
           elements: x.elements.map(recurse),
         };
 
@@ -79,6 +95,10 @@ export function discretize(value: Value): Statement[] {
     // Not necessary
     if (x.type !== 'class-instantiation' && x.type !== 'static-method-call') { return x; }
 
+    return extract(x, namingHint);
+  }
+
+  function extract(x: Value, namingHint: string): Value {
     const variableName = makeVariableName(namingHint);
     statements.push({ type: 'assignment', variableName, value: x });
     return { type: 'variable', variableName };

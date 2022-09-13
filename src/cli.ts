@@ -1,12 +1,12 @@
 import * as fs from 'fs-extra';
-import prand from 'pure-rand';
 import * as yargs from 'yargs';
-import { AwsBiaser } from './construction/aws-biaser';
-import { MinimalValueGenerator, TypeSource } from './construction/minimal';
+import { AwsBiaser, AWS_CUSTOM_DISTRIBUTIONS } from './construction/aws-biaser';
+import { Evaluator } from './construction/evaluate';
+import { parseValueSources } from './construction/extract-distribution';
+import { ValueGenerator } from './construction/generate';
 import { ValueMutator } from './construction/mutate';
-import { parseValueSources } from './construction/parse-values-sources';
+import { Random } from './construction/random';
 import { discretize, printStatement } from './construction/statements';
-import { Synthesizer } from './construction/synth';
 import { Value } from './construction/values';
 
 async function main() {
@@ -29,6 +29,7 @@ async function main() {
 
       const result = await parseValueSources({
         assemblyLocations: assemblyDirs,
+        biaser: new AwsBiaser(),
       });
 
       await fs.writeJson(args.output, result.model, { spaces: 2, encoding: 'utf-8' });
@@ -68,23 +69,27 @@ async function main() {
       }),
     async (args) => {
       const model = await fs.readJson(args.input);
-      const source = new TypeSource(model, { biaser: new AwsBiaser() });
+      const random = Random.mersenneFromSeed(args.seed);
 
-      const mini = new MinimalValueGenerator(source);
-      let value = mini.generate(args.FQN!);
+      const gen = new ValueGenerator(model, random, {
+        customDistributions: AWS_CUSTOM_DISTRIBUTIONS,
+      });
+      let value = gen.minimal(args.FQN!);
       printAndSynth(value, args.synth);
 
-      let rng = prand.mersenne(args.seed ?? Date.now());
       for (let i = 0; i < args.variants; i++) {
-        const mutator = new ValueMutator(source, rng, { variants: 1 });
+        console.log('--------------------------------------');
+        const mutator = new ValueMutator(model, random, {
+          variants: 1,
+          customDistributions: AWS_CUSTOM_DISTRIBUTIONS,
+        });
 
-        value = mutator.mutate(args.FQN!, value)[0];
+        value = mutator.mutate(value)[0];
         if (!value) {
           console.log('Could not find any more mutations');
           break;
         }
         printAndSynth(value, args.synth);
-        rng = mutator.rng;
       }
     })
     .help()
@@ -132,11 +137,11 @@ function mkpad(n: number) {
 */
 
 function printAndSynth(value: Value, synth: boolean) {
-  console.log(JSON.stringify(value, undefined, 2));
+  // console.log(JSON.stringify(value, undefined, 2));
   const plan = discretize(value);
 
   if (synth) {
-    const synther = new Synthesizer({
+    const synther = new Evaluator({
       printStatements: true,
     });
     const template = synther.synth(discretize(value));

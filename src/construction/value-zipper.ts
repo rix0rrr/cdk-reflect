@@ -70,7 +70,9 @@ function zipperSetRec(z: Zipper, value: Value[]): Value[] {
     case 'class-instantiation':
       return [{
         type: 'class-instantiation',
+        distPtr: x.ptr.distPtr,
         fqn: x.ptr.fqn,
+        parameterNames: x.ptr.parameterNames,
         arguments: [
           ...x.ptr.arguments.slice(0, x.argumentIndex),
           ...next(),
@@ -80,8 +82,10 @@ function zipperSetRec(z: Zipper, value: Value[]): Value[] {
     case 'static-method-call':
       return [{
         type: 'static-method-call',
+        distPtr: x.ptr.distPtr,
         fqn: x.ptr.fqn,
         staticMethod: x.ptr.staticMethod,
+        parameterNames: x.ptr.parameterNames,
         arguments: [
           ...x.ptr.arguments.slice(0, x.argumentIndex),
           ...next(),
@@ -101,6 +105,7 @@ function zipperSetRec(z: Zipper, value: Value[]): Value[] {
       const nextV = next();
       return [{
         type: 'map-literal',
+        distPtr: x.ptr.distPtr,
         entries: nextV.length > 0
           ? { ...x.ptr.entries, [x.key]: nextV[0] }
           : unset({ ...x.ptr.entries }, x.key),
@@ -110,6 +115,7 @@ function zipperSetRec(z: Zipper, value: Value[]): Value[] {
       const nextV = next();
       return [{
         type: 'object-literal',
+        distPtr: x.ptr.distPtr,
         entries: nextV.length > 0
           ? { ...x.ptr.entries, [x.fieldName]: nextV[0] }
           : unset({ ...x.ptr.entries }, x.fieldName),
