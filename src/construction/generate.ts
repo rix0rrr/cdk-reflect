@@ -34,7 +34,6 @@ export class ValueGenerator {
   protected minimalValueFromSource(source: ResolvedValueSource, distPtr: DistPtr, loc: Zipper): Value {
     switch (source.type) {
       case 'class-instantiation': {
-        console.log('class instantiation', source.fqn);
         return this.fillMinimalArguments(source.parameters, loc, {
           type: 'class-instantiation',
           fqn: source.fqn,
@@ -44,7 +43,6 @@ export class ValueGenerator {
         });
       }
       case 'static-method-call': {
-        console.log('static method call', source.fqn);
         return this.fillMinimalArguments(source.parameters, loc, {
           type: 'static-method-call',
           fqn: source.fqn,

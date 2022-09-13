@@ -51,34 +51,35 @@ export class ValueMutator extends ValueGenerator {
 
   private mutateValue(value: Value, zipper: Zipper) {
     // One possible mutation: use a different source from the same distribution
-    let currentSource: ResolvedValueSource | undefined;
+    let source: ResolvedValueSource | undefined;
 
     if (valueHasDistPtr(value)) {
       const sources = this.query.resolveDist(value.distPtr);
-      currentSource = sources[value.distPtr.sourceIndex];
+      source = sources[value.distPtr.sourceIndex];
 
-      sources.forEach((source, i) => {
+      sources.forEach((s, i) => {
         if (i !== value.distPtr.sourceIndex) {
           const newDistPtr = { distId: value.distPtr.distId, sourceIndex: i };
-          this.proposeSet(zipper, this.minimalValueFromSource(source, newDistPtr, zipper));
+          this.proposeSet(zipper, this.minimalValueFromSource(s, newDistPtr, zipper));
         }
       });
     }
 
-    switch (value.type) {
+    if (!source) { return; }
+
+    switch (source.type) {
       // Nothing about the access itself to mutate here.
       // Any mutation will have to relying on having picked a different source here.
-      case 'scope':
       case 'no-value':
-      case 'variable':
       case 'static-property':
+      case 'constant':
         return;
 
       case 'array': {
-        if (currentSource?.type === 'array') {
-          // Add an element
-          this.proposeNewMinimalValue(zipperDescend(zipper, value, value.elements.length), currentSource.elements);
-        }
+        if (value.type !== 'array') { return; }
+
+        // Add an element
+        this.proposeNewMinimalValue(zipperDescend(zipper, value, value.elements.length), source.elements);
 
         if (value.elements.length > 0) {
           // Remove or mutate an element
@@ -88,15 +89,15 @@ export class ValueMutator extends ValueGenerator {
           this.proposeDelete(elZipper);
           this.mutateValue(value.elements[i], elZipper);
         }
-        break;
+        return;
       }
 
-      case 'map-literal': {
-        if (currentSource?.type === 'map') {
-          // Add, remove, or mutate a key
-          const newKey = this.random.generateString(1, 10, ALPHABET_CHARS);
-          this.proposeNewMinimalValue(zipperDescend(zipper, value, newKey), currentSource.elements);
-        }
+      case 'map': {
+        if (value.type !== 'map-literal') { return; }
+
+        // Add, remove, or mutate a key
+        const newKey = this.random.generateString(1, 10, ALPHABET_CHARS);
+        this.proposeNewMinimalValue(zipperDescend(zipper, value, newKey), source.elements);
 
         const keys = Object.keys(value.entries);
         if (keys.length > 0) {
@@ -107,17 +108,17 @@ export class ValueMutator extends ValueGenerator {
           this.proposeDelete(elZipper);
           this.mutateValue(value.entries[randomKey], elZipper);
         }
-        break;
+        return;
       }
 
       case 'class-instantiation':
       case 'static-method-call': {
-        if (currentSource?.type !== value.type) { return; }
+        if (source.type !== value.type) { return; }
 
         // Add an argument if possible
-        if (value.arguments.length < currentSource.parameters.length) {
+        if (value.arguments.length < source.parameters.length) {
           const newArgZipper = zipperDescend(zipper, value, value.arguments.length);
-          this.proposeSet(newArgZipper, this.minimalValue(currentSource.parameters[value.arguments.length].dist, newArgZipper));
+          this.proposeSet(newArgZipper, this.minimalValue(source.parameters[value.arguments.length].dist, newArgZipper));
         }
 
         // Find an argument to mutate (if (this.didMutate(...)) }
@@ -130,28 +131,39 @@ export class ValueMutator extends ValueGenerator {
               this.mutateValue(value.arguments[arg], elZipper);
             });
 
-            if (didP) { break; }
+            if (didP) { return; }
           }
         }
 
-        break;
+        return;
       }
 
-      case 'object-literal':
+      case 'value-object':
+        if (value.type !== 'object-literal') { return; }
+
         // Randomly mutate all keys
         for (const [key, entryValue] of Object.entries(value.entries)) {
           const elZipper = zipperDescend(zipper, value, key);
           this.mutateValue(entryValue, elZipper);
         }
-        break;
+        return;
 
       case 'primitive':
+        if (value.type !== 'primitive') { return; }
+
         const newValue = this.mutatePrimitiveValue(value);
         this.proposeSet(zipper, { ...value, value: newValue as any });
+        return;
+
+      case 'custom':
+        this.custom(source.sourceName).mutate(value, zipper, {
+          proposeDelete: this.proposeDelete.bind(this),
+          proposeSet: this.proposeSet.bind(this),
+        });
         break;
 
       default:
-        assertSwitchIsExhaustive(value);
+        assertSwitchIsExhaustive(source);
     }
   }
 

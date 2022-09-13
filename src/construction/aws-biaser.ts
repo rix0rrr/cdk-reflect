@@ -84,16 +84,22 @@ export const AWS_CUSTOM_DISTRIBUTIONS: Record<string, ICustomDistribution> = {
     minimalValue(distPtr) {
       return { type: 'scope', distPtr };
     },
+    mutate() {
+    },
   },
   constructId: {
     minimalValue(distPtr, zipper) {
       const id = isCallableValue(zipper[0].ptr) ? `My${classNameFromFqn(zipper[0].ptr.fqn)}` : 'MyConstruct';
       return stringPrim(id, distPtr);
     },
+    mutate() {
+    },
   },
   arn: {
     minimalValue(distPtr) {
       return stringPrim('arn:aws:service:region:account-id:resource-type/resource-id', distPtr);
+    },
+    mutate() {
     },
   },
 };
