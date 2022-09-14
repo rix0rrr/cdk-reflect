@@ -174,3 +174,15 @@ export interface ArrayElementLoc {
   readonly index: number;
   readonly ptr: ArrayValue;
 }
+
+export function printZipper(zipper: Zipper) {
+  return [...zipper].reverse().map((z): string => {
+    switch (z.type) {
+      case 'class-instantiation': return `new ${z.ptr.fqn}(<${z.ptr.parameterNames[z.argumentIndex]}>)`;
+      case 'static-method-call': return `${z.ptr.fqn}.${z.ptr.staticMethod}(<${z.ptr.parameterNames[z.argumentIndex]}>)`;
+      case 'struct-field': return `.${z.fieldName}`;
+      case 'array-element': return `[${z.index}]`;
+      case 'map-entry': return `[${z.key}]`;
+    }
+  }).join(' » ');
+}

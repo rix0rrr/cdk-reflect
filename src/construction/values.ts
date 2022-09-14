@@ -146,53 +146,13 @@ export function printValue(value: Value): string {
       case 'object-literal':
       case 'map-literal':
         return '{\n' + Object.entries(x.entries)
-          .map(([k, v]) => indent(`${k}: ${recurse(v)}`))
-          .join(',\n')
-          + '\n}';
+          .filter(([_, v]) => v.type !== 'no-value')
+          .map(([k, v]) => indent(`${k}: ${recurse(v)},\n`))
+          + '}';
       case 'class-instantiation':
         return `new ${x.fqn}(${x.arguments.map(recurse).join(', ')})`;
       case 'static-method-call':
         return `${x.fqn}.${x.staticMethod}(${x.arguments.map(recurse).join(', ')})`;
     }
-  }
-}
-
-export function valueEquals(a: Value, b: Value): boolean {
-  switch (a.type) {
-    case 'array':
-      if (b.type !== 'array') { return false; }
-      return a.elements.length === b.elements.length && a.elements.every((x, i) => valueEquals(x, b.elements[i]));
-    case 'class-instantiation':
-      if (b.type !== 'class-instantiation') { return false; }
-      // No need to recurse into arguments -- there is only one constructor for every class
-      return a.fqn === b.fqn;
-    case 'map-literal':
-    case 'object-literal': {
-      if (b.type !== a.type) { return false; }
-      const aKeys = Object.keys(a.entries);
-      const bKeys = Object.keys(b.entries);
-      return aKeys.length === bKeys.length && aKeys.every(k => b.entries[k] && valueEquals(a.entries[k], b.entries[k]));
-    }
-    case 'no-value':
-    case 'scope':
-      return b.type === a.type;
-    case 'variable':
-      return b.type === 'variable' && a.variableName === b.variableName;
-    case 'primitive':
-      if (b.type !== 'primitive') { return false; }
-      switch (a.primitive) {
-        case 'boolean':
-        case 'number':
-        case 'string':
-          return b.primitive === a.primitive && a.value === b.value;
-        case 'date':
-          return b.primitive === 'date' && a.value.getTime() === b.value.getTime();
-      }
-    case 'static-method-call':
-      if (b.type !== 'static-method-call') { return false; }
-      // No need to recurse into arguments -- there are no overloads
-      return a.fqn === b.fqn && a.staticMethod === b.staticMethod;
-    case 'static-property':
-      return a.type === b.type && a.fqn === b.fqn && a.staticProperty === b.staticProperty;
   }
 }

@@ -2,7 +2,7 @@ import { ICustomDistribution } from './custom-distribution';
 import { DistributionOps } from './distribution-ops';
 import { DistributionRef, ParameterSource, PrimitiveName, ResolvedValueSource, ValueModel } from './distributions';
 import { Random } from './random';
-import { Zipper, zipperDescend } from './value-zipper';
+import { printZipper, Zipper, zipperDescend } from './value-zipper';
 import { ClassInstantiation, DistPtr, StaticMethodCall, StructLiteral, Value } from './values';
 
 export interface GeneratorOptions {
@@ -15,6 +15,7 @@ export interface GeneratorOptions {
 export class ValueGenerator {
   protected readonly query: DistributionOps;
   protected readonly customDistributions: Map<string, ICustomDistribution>;
+  private readonly recursionBreaker = new Set<string>();
 
   constructor(model: ValueModel, protected readonly random: Random, options: GeneratorOptions = {}) {
     this.query = new DistributionOps(model);
@@ -26,12 +27,32 @@ export class ValueGenerator {
   }
 
   protected minimalValue(dist: DistributionRef, loc: Zipper): Value {
-    const src = this.query.resolveDist(dist)[0];
-    const source: DistPtr = { distId: dist.distId, sourceIndex: 0 };
-    return this.minimalValueFromSource(src, source, loc);
+    const self = this;
+    const sources = this.query.resolveDist(dist);
+
+    for (let i = 0; i < sources.length; i++) {
+      const distPtr: DistPtr = { distId: dist.distId, sourceIndex: i };
+      if (this.recursionBreaker.has(stringFromDistPtr(distPtr))) { continue; }
+
+      return tryIndex(i);
+    }
+
+    return tryIndex(0);
+
+    function tryIndex(sourceIndex: number) {
+      const distPtr: DistPtr = { distId: dist.distId, sourceIndex };
+      const distPtrKey = stringFromDistPtr(distPtr);
+      self.recursionBreaker.add(distPtrKey);
+      try {
+        return self.minimalValueFromSource(sources[sourceIndex], distPtr, loc);
+      } finally {
+        self.recursionBreaker.delete(distPtrKey);
+      }
+    }
   }
 
   protected minimalValueFromSource(source: ResolvedValueSource, distPtr: DistPtr, loc: Zipper): Value {
+    console.log(printZipper(loc), JSON.stringify(source));
     switch (source.type) {
       case 'class-instantiation': {
         return this.fillMinimalArguments(source.parameters, loc, {
@@ -159,12 +180,14 @@ export class ValueGenerator {
   private fillMinimalFields(fields: Record<string, DistributionRef>, loc: Zipper, baseStruct: StructLiteral): Value {
     for (const [k, ref] of Object.entries(fields)) {
       const value = this.minimalValue(ref, zipperDescend(loc, baseStruct, k));
-      if (value.type !== 'no-value') {
-        baseStruct.entries[k] = value;
-      }
+      baseStruct.entries[k] = value;
     }
     return baseStruct;
   }
 }
 
 export const ALPHABET_CHARS = '-abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01923456789 _:$';
+
+function stringFromDistPtr(x: DistPtr) {
+  return `${x.distId}:${x.sourceIndex}`;
+}

@@ -99,3 +99,11 @@ export function range(n: number): number[] {
   }
   return ret;
 }
+
+export function enumerate<A>(xs: A[]): Array<[A, number]> {
+  const ret = new Array();
+  for (let i = 0; i < xs.length; i++) {
+    ret.push([xs[i], i]);
+  }
+  return ret;
+}

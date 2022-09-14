@@ -27,6 +27,10 @@ export class ValueMutator extends ValueGenerator {
   }
 
   public mutate(value: Value): Value[] {
+    if (this.n > 0) {
+      throw new Error('You can only call mutate once!');
+    }
+
     this.mutateValue(value, []);
     return this.proposedMutations.map(applyMutation);
   }
@@ -126,6 +130,10 @@ export class ValueMutator extends ValueGenerator {
           const args = this.random.shuffleMutate(range(value.arguments.length));
 
           for (const arg of args) {
+            if (arg == 2) {
+              debugger;
+            }
+
             const didP = this.didPropose(() => {
               const elZipper = zipperDescend(zipper, value, arg);
               this.mutateValue(value.arguments[arg], elZipper);
@@ -141,7 +149,7 @@ export class ValueMutator extends ValueGenerator {
       case 'value-object':
         if (value.type !== 'object-literal') { return; }
 
-        // Randomly mutate all keys
+        // Randomly mutate all keys. Get them from the source, the value might have been populated sparsely
         for (const [key, entryValue] of Object.entries(value.entries)) {
           const elZipper = zipperDescend(zipper, value, key);
           this.mutateValue(entryValue, elZipper);
