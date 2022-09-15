@@ -1,4 +1,5 @@
 import * as crypto from 'crypto';
+import { failure, Result, unwrapOr } from '../util';
 import { DistributionRef, FqnSource, ResolvedValueDistribution, ValueDistribution, ValueModel } from './distributions';
 
 export class DistributionOps {
@@ -9,10 +10,10 @@ export class DistributionOps {
     return this.model.distributions[ref.distId] ?? [];
   }
 
-  public lookupFqn(fqn: string): FqnSource[] {
+  public lookupFqn(fqn: string): Result<FqnSource[]> {
     const constructors = this.model.fqnSources[fqn];
     if (!constructors || constructors.length === 0) {
-      throw new Error(`No constructors for type: ${fqn}`);
+      return failure(`No constructors for type: ${fqn}`);
     }
     return constructors;
   }
@@ -20,19 +21,19 @@ export class DistributionOps {
   /**
    * Look up a distribution with the FQNs substituted by their constructors
    */
-  public resolveDist(ref: DistributionRef): ResolvedValueDistribution {
+  public resolveDist(ref: DistributionRef): Result<ResolvedValueDistribution> {
     const ret: ResolvedValueDistribution = [];
 
     for (const src of this.lookupDist(ref)) {
       if (src.type === 'fqn') {
-        ret.push(...this.lookupFqn(src.fqn));
+        ret.push(...unwrapOr(this.lookupFqn(src.fqn), []));
       } else {
         ret.push(src);
       }
     }
 
     if (ret.length === 0) {
-      throw new Error(`No values in distribution: ${ref.distId}`);
+      return failure(`No values in distribution: ${ref.distId}`);
     }
 
     return ret;

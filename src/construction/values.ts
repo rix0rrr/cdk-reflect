@@ -147,7 +147,8 @@ export function printValue(value: Value): string {
       case 'map-literal':
         return '{\n' + Object.entries(x.entries)
           .filter(([_, v]) => v.type !== 'no-value')
-          .map(([k, v]) => indent(`${k}: ${recurse(v)},\n`))
+          .map(([k, v]) => indent(`${k}: ${recurse(v)},`) + '\n')
+          .join('')
           + '}';
       case 'class-instantiation':
         return `new ${x.fqn}(${x.arguments.map(recurse).join(', ')})`;

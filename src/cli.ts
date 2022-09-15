@@ -8,6 +8,7 @@ import { ValueMutator } from './construction/mutate';
 import { Random } from './construction/random';
 import { discretize, printStatement } from './construction/statements';
 import { Value } from './construction/values';
+import { timed } from './util';
 
 async function main() {
   await yargs
@@ -68,29 +69,35 @@ async function main() {
         default: 10,
       }),
     async (args) => {
+      console.error('Reading model');
       const model = await fs.readJson(args.input);
       const random = Random.mersenneFromSeed(args.seed);
 
+      console.error('Generating minimal value');
       const gen = new ValueGenerator(model, random, {
         customDistributions: AWS_CUSTOM_DISTRIBUTIONS,
       });
       let value = gen.minimal(args.FQN!);
       printAndSynth(value, args.synth);
 
-      for (let i = 0; i < args.variants; i++) {
-        console.log('--------------------------------------');
-        const mutator = new ValueMutator(model, random, {
-          variants: 1,
-          customDistributions: AWS_CUSTOM_DISTRIBUTIONS,
-        });
+      const [seconds] = timed(() => {
+        for (let i = 0; i < args.variants; i++) {
+          console.log('--------------------------------------');
+          const mutator = new ValueMutator(model, random, {
+            variants: 1,
+            customDistributions: AWS_CUSTOM_DISTRIBUTIONS,
+          });
 
-        value = mutator.mutate(value)[0];
-        if (!value) {
-          console.log('Could not find any more mutations');
-          break;
+          value = mutator.mutate(value)[0];
+          if (!value) {
+            console.log('Could not find any more mutations');
+            break;
+          }
+          printAndSynth(value, args.synth);
         }
-        printAndSynth(value, args.synth);
-      }
+      });
+
+      console.log(`${seconds.toFixed(1)}s, ${(args.variants / seconds).toFixed(2)} mutations/s`);
     })
     .help()
     .strictOptions()

@@ -1,9 +1,10 @@
+import { apply, isFailure, Result, unwrap, prependFailure, failure } from '../util';
 import { ICustomDistribution } from './custom-distribution';
 import { DistributionOps } from './distribution-ops';
 import { DistributionRef, ParameterSource, PrimitiveName, ResolvedValueSource, ValueModel } from './distributions';
 import { Random } from './random';
-import { printZipper, Zipper, zipperDescend } from './value-zipper';
-import { ClassInstantiation, DistPtr, StaticMethodCall, StructLiteral, Value } from './values';
+import { Zipper, zipperDescend } from './value-zipper';
+import { ArrayValue, ClassInstantiation, DistPtr, StaticMethodCall, StructLiteral, Value } from './values';
 
 export interface GeneratorOptions {
   /**
@@ -23,36 +24,38 @@ export class ValueGenerator {
   }
 
   public minimal(fqn: string): Value {
-    return this.minimalValue(this.query.recordDistribution([{ type: 'fqn', fqn }]), []);
+    return unwrap(this.minimalValue(this.query.recordDistribution([{ type: 'fqn', fqn }]), []));
   }
 
-  protected minimalValue(dist: DistributionRef, loc: Zipper): Value {
-    const self = this;
-    const sources = this.query.resolveDist(dist);
+  protected minimalValue(dist: DistributionRef, loc: Zipper): Result<Value> {
+    return apply(this.query.resolveDist(dist), sources => {
+      for (let i = 0; i < sources.length; i++) {
+        const distPtr: DistPtr = { distId: dist.distId, sourceIndex: i };
 
-    for (let i = 0; i < sources.length; i++) {
-      const distPtr: DistPtr = { distId: dist.distId, sourceIndex: i };
-      if (this.recursionBreaker.has(stringFromDistPtr(distPtr))) { continue; }
-
-      return tryIndex(i);
-    }
-
-    return tryIndex(0);
-
-    function tryIndex(sourceIndex: number) {
-      const distPtr: DistPtr = { distId: dist.distId, sourceIndex };
-      const distPtrKey = stringFromDistPtr(distPtr);
-      self.recursionBreaker.add(distPtrKey);
-      try {
-        return self.minimalValueFromSource(sources[sourceIndex], distPtr, loc);
-      } finally {
-        self.recursionBreaker.delete(distPtrKey);
+        const ret = this.minimalValueFromSource(sources[i], distPtr, loc);
+        if (!isFailure(ret)) { return ret; }
       }
+
+      return failure('no options left to try');
+    });
+  }
+
+  protected minimalValueFromSource(source: ResolvedValueSource, distPtr: DistPtr, loc: Zipper): Result<Value> {
+    const distPtrKey = stringFromDistPtr(distPtr);
+
+    if (this.recursionBreaker.has(stringFromDistPtr(distPtr))) {
+      return failure('Breaking recursion');
+    }
+
+    this.recursionBreaker.add(distPtrKey);
+    try {
+      return apply(this._minimalValueFromSource(source, distPtr, loc), validateValue);
+    } finally {
+      this.recursionBreaker.delete(distPtrKey);
     }
   }
 
-  protected minimalValueFromSource(source: ResolvedValueSource, distPtr: DistPtr, loc: Zipper): Value {
-    console.log(printZipper(loc), JSON.stringify(source));
+  private _minimalValueFromSource(source: ResolvedValueSource, distPtr: DistPtr, loc: Zipper): Result<Value> {
     switch (source.type) {
       case 'class-instantiation': {
         return this.fillMinimalArguments(source.parameters, loc, {
@@ -96,7 +99,17 @@ export class ValueGenerator {
       case 'primitive':
         return this.minimalPrimitive(source.primitive, distPtr);
       case 'array':
-        return { type: 'array', distPtr, elements: [] };
+        // A minimal array has one element in it (many arrays have to be non-empty)
+        // If we can't generate an element, don't generate an array at all
+        const arrayBase: ArrayValue = {
+          type: 'array',
+          distPtr,
+          elements: [],
+        };
+        const element = this.minimalValue(source.elements, zipperDescend(loc, arrayBase, 0));
+        if (isFailure(element)) { return prependFailure('Could not generate array', element); }
+        arrayBase.elements.push(element);
+        return arrayBase;
       case 'map':
         return { type: 'map-literal', distPtr, entries: {} };
       case 'constant':
@@ -114,11 +127,12 @@ export class ValueGenerator {
     return d;
   }
 
-  private fillMinimalArguments(ps: ParameterSource[], loc: Zipper, baseValue: ClassInstantiation | StaticMethodCall): Value {
+  private fillMinimalArguments(ps: ParameterSource[], loc: Zipper, baseValue: ClassInstantiation | StaticMethodCall): Result<Value> {
     let i = 0;
     for (; i < ps.length; i++) {
       const p = ps[i];
       const arg = this.minimalValue(p.dist, zipperDescend(loc, baseValue, i));
+      if (isFailure(arg)) { return arg; }
       if (arg.type === 'no-value') { break; }
       baseValue.arguments.push(arg);
     }
@@ -177,9 +191,11 @@ export class ValueGenerator {
     }
   }
 
-  private fillMinimalFields(fields: Record<string, DistributionRef>, loc: Zipper, baseStruct: StructLiteral): Value {
+  private fillMinimalFields(fields: Record<string, DistributionRef>, loc: Zipper, baseStruct: StructLiteral): Result<Value> {
     for (const [k, ref] of Object.entries(fields)) {
       const value = this.minimalValue(ref, zipperDescend(loc, baseStruct, k));
+      if (isFailure(value)) { return value; }
+
       baseStruct.entries[k] = value;
     }
     return baseStruct;
@@ -190,4 +206,15 @@ export const ALPHABET_CHARS = '-abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUV
 
 function stringFromDistPtr(x: DistPtr) {
   return `${x.distId}:${x.sourceIndex}`;
+}
+
+export function valueHasDistPtr(v: Value): v is Extract<Value, { distPtr: DistPtr }> {
+  return v.type !== 'variable';
+}
+
+export function validateValue(v: Value): Value {
+  if (valueHasDistPtr(v) && !v.distPtr) {
+    throw new Error(`Value is missing distPtr: ${JSON.stringify(v)}`);
+  }
+  return v;
 }

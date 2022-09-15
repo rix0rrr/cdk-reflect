@@ -80,27 +80,33 @@ function zipperSetRec(z: Zipper, value: Value[]): Value[] {
         ],
       } as ClassInstantiation];
     case 'static-method-call':
-      return [{
-        type: 'static-method-call',
-        distPtr: x.ptr.distPtr,
-        fqn: x.ptr.fqn,
-        staticMethod: x.ptr.staticMethod,
-        parameterNames: x.ptr.parameterNames,
-        arguments: [
-          ...x.ptr.arguments.slice(0, x.argumentIndex),
-          ...next(),
-          ...x.ptr.arguments.slice(x.argumentIndex + 1),
-        ],
-      } as StaticMethodCall];
+      return [
+        {
+          type: 'static-method-call',
+          distPtr: x.ptr.distPtr,
+          fqn: x.ptr.fqn,
+          staticMethod: x.ptr.staticMethod,
+          parameterNames: x.ptr.parameterNames,
+          targetFqn: x.ptr.targetFqn,
+          arguments: [
+            ...x.ptr.arguments.slice(0, x.argumentIndex),
+            ...next(),
+            ...x.ptr.arguments.slice(x.argumentIndex + 1),
+          ],
+        },
+      ];
     case 'array-element':
-      return [{
-        type: 'array',
-        elements: [
-          ...x.ptr.elements.slice(0, x.index),
-          ...next(),
-          ...x.ptr.elements.slice(x.index + 1),
-        ],
-      } as ArrayValue];
+      return [
+        {
+          type: 'array',
+          distPtr: x.ptr.distPtr,
+          elements: [
+            ...x.ptr.elements.slice(0, x.index),
+            ...next(),
+            ...x.ptr.elements.slice(x.index + 1),
+          ],
+        },
+      ];
     case 'map-entry': {
       const nextV = next();
       return [{

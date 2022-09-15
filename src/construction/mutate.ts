@@ -1,9 +1,9 @@
-import { assertSwitchIsExhaustive, range } from '../util';
+import { apply, assertSwitchIsExhaustive, isFailure } from '../util';
 import { DistributionRef, ResolvedValueSource, ValueModel } from './distributions';
-import { ALPHABET_CHARS, ValueGenerator, GeneratorOptions } from './generate';
+import { ALPHABET_CHARS, ValueGenerator, GeneratorOptions, valueHasDistPtr, validateValue } from './generate';
 import { Random } from './random';
 import { Zipper, zipperDelete, zipperDescend, zipperSet } from './value-zipper';
-import { DistPtr, PrimitiveValue, Value } from './values';
+import { PrimitiveValue, Value } from './values';
 
 export interface MutatorOptions extends GeneratorOptions {
   /**
@@ -46,7 +46,7 @@ export class ValueMutator extends ValueGenerator {
   }
 
   private proposeSet(zipper: Zipper, value: Value) {
-    this.proposeMutation({ mutation: 'set', zipper, value });
+    this.proposeMutation({ mutation: 'set', zipper, value: validateValue(value) });
   }
 
   private proposeDelete(zipper: Zipper) {
@@ -59,14 +59,18 @@ export class ValueMutator extends ValueGenerator {
 
     if (valueHasDistPtr(value)) {
       const sources = this.query.resolveDist(value.distPtr);
+      if (isFailure(sources)) { return; }
+
       source = sources[value.distPtr.sourceIndex];
 
-      sources.forEach((s, i) => {
-        if (i !== value.distPtr.sourceIndex) {
-          const newDistPtr = { distId: value.distPtr.distId, sourceIndex: i };
-          this.proposeSet(zipper, this.minimalValueFromSource(s, newDistPtr, zipper));
-        }
-      });
+      for (const [s, sourceIndex] of this.random.randomIteration(sources)) {
+        if (s === source) { continue; } // Don't reuse the current source
+
+        const newDistPtr = { distId: value.distPtr.distId, sourceIndex };
+        apply(
+          this.minimalValueFromSource(s, newDistPtr, zipper),
+          newValue => this.proposeSet(zipper, newValue));
+      }
     }
 
     if (!source) { return; }
@@ -122,25 +126,19 @@ export class ValueMutator extends ValueGenerator {
         // Add an argument if possible
         if (value.arguments.length < source.parameters.length) {
           const newArgZipper = zipperDescend(zipper, value, value.arguments.length);
-          this.proposeSet(newArgZipper, this.minimalValue(source.parameters[value.arguments.length].dist, newArgZipper));
+          apply(
+            this.minimalValue(source.parameters[value.arguments.length].dist, newArgZipper),
+            newValue => this.proposeSet(newArgZipper, newValue));
         }
 
         // Find an argument to mutate (if (this.didMutate(...)) }
-        if (value.arguments.length > 0) {
-          const args = this.random.shuffleMutate(range(value.arguments.length));
+        for (const [arg, i] of this.random.randomIteration(value.arguments)) {
+          const arrayValue = value;
+          const didP = this.didPropose(() => {
+            this.mutateValue(arg, zipperDescend(zipper, arrayValue, i));
+          });
 
-          for (const arg of args) {
-            if (arg == 2) {
-              debugger;
-            }
-
-            const didP = this.didPropose(() => {
-              const elZipper = zipperDescend(zipper, value, arg);
-              this.mutateValue(value.arguments[arg], elZipper);
-            });
-
-            if (didP) { return; }
-          }
+          if (didP) { return; }
         }
 
         return;
@@ -185,7 +183,9 @@ export class ValueMutator extends ValueGenerator {
   }
 
   private proposeNewMinimalValue(zipper: Zipper, distRef: DistributionRef) {
-    this.proposeSet(zipper, this.minimalValue(distRef, zipper));
+    apply(
+      this.minimalValue(distRef, zipper),
+      newValue => this.proposeSet(zipper, newValue));
   }
 
   private mutatePrimitiveValue<A extends PrimitiveValue>(primitive: A): A['value'] {
@@ -251,8 +251,4 @@ function applyMutation(m: Mutation): Value {
     case 'delete':
       return zipperDelete(m.zipper);
   }
-}
-
-function valueHasDistPtr(v: Value): v is Extract<Value, { distPtr: DistPtr }> {
-  return v.type !== 'variable';
 }

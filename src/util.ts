@@ -5,12 +5,11 @@ export function isDefined<A>(x: A): x is NonNullable<A> {
 const FAILSYM = Symbol('FAILED');
 
 export type Failure = { readonly [FAILSYM]: true; reason: string };
-export type Success<A> = { readonly [FAILSYM]: false; value: A };
 
-export type Result<A> = Success<A> | Failure;
+export type Result<A> = A | Failure;
 
-export function isSuccess<T>(x: Result<T>): x is Success<T> {
-  return typeof x === 'object' && x && FAILSYM in x && !x[FAILSYM];
+export function isSuccess<T>(x: Result<T>): x is T {
+  return typeof x === 'object' && x && !(FAILSYM in x);
 }
 
 export function isFailure<T>(x: Result<T>): x is Failure {
@@ -21,15 +20,23 @@ export function failure(reason: string): Failure {
   return { [FAILSYM]: true, reason };
 }
 
-export function success<T>(value: T): Result<T> {
-  return { [FAILSYM]: false, value };
+export function prependFailure(reason: string, f: Failure): Failure {
+  return failure(`${reason}: ${f.reason}`);
 }
 
-export function unwrapR<T>(value: Result<T>): T {
+export function unwrap<T>(value: Result<T>): T {
   if (isFailure(value)) {
     throw new Error(value.reason);
   }
-  return value.value;
+  return value;
+}
+
+export function unwrapOr<T>(value: Result<T>, def: T): T {
+  return isFailure(value) ? def : value;
+}
+
+export function apply<T, U>(value: Result<T>, fn: (x: T) => U | Result<U>): Result<U> {
+  return isFailure(value) ? value : fn(value);
 }
 
 export function reasons<T>(xs?: Result<T>[]): string[] {
@@ -39,7 +46,7 @@ export function reasons<T>(xs?: Result<T>[]): string[] {
 export function liftR<T>(xs: Result<T>[]): Result<T[]> {
   const failures = xs.filter(isFailure);
   if (failures.length > 0) { return failure(reasons(failures).join(', ')); }
-  return success(xs.map(unwrapR));
+  return xs as Result<T[]>;
 }
 
 export type NonResult<A> = A extends Result<infer B> ? B : A;
@@ -48,9 +55,9 @@ export function liftObjR<B extends object>(x: B): Result<{ [k in keyof B]: NonRe
   const ret: any = {};
   for (const [key, mem] of Object.entries(x)) {
     if (isFailure(mem)) { return failure(mem.reason); }
-    ret[key] = isSuccess(mem) ? unwrapR(mem) : mem;
+    ret[key] = isSuccess(mem) ? unwrap(mem) : mem;
   }
-  return success(ret);
+  return ret;
 }
 
 export function partition<T>(xs: T[], pred: (x: T) => boolean): [T[], T[]] {
@@ -106,4 +113,15 @@ export function enumerate<A>(xs: A[]): Array<[A, number]> {
     ret.push([xs[i], i]);
   }
   return ret;
+}
+
+/**
+ * Runs a block and returns the result plus the time it took, in seconds
+ */
+export function timed<A>(block: () => A): [number, A] {
+  const startTime = Date.now();
+  const ret = block();
+  const endTime = Date.now();
+
+  return [(endTime - startTime) / 1000, ret];
 }

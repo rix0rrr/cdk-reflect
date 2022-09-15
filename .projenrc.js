@@ -15,6 +15,7 @@ const project = new typescript.TypeScriptProject({
     'yargs',
     '@jsii/spec',
     'pure-rand',
+    'case',
   ],
   devDeps: [
     '@types/jest',

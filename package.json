@@ -58,11 +58,12 @@
   },
   "dependencies": {
     "@jsii/spec": "^1.55.1",
-    "aws-cdk-lib": "*",
+    "aws-cdk-lib": "^2.41.0",
+    "case": "^1.6.3",
     "fs-extra": "^10.0.1",
     "jsii-reflect": "^1.55.0",
-    "yargs": "^17.3.1",
-    "pure-rand": "^5.0.1"
+    "pure-rand": "^5.0.1",
+    "yargs": "^17.3.1"
   },
   "main": "lib/index.js",
   "license": "Apache-2.0",

@@ -1,4 +1,5 @@
 import prand from 'pure-rand';
+import { range } from '../util';
 
 /**
  * A wrapper around 'pure-rand' which mutates itself in-place
@@ -48,6 +49,7 @@ export class Random {
     return xs;
   }
 
+  public randomIteration<A>(xs: A[]): Array<[A, number]> {
+    return this.shuffleMutate(range(xs.length)).map(i => [xs[i], i]);
+  }
 }
-
-

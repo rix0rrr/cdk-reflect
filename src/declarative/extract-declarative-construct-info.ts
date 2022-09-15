@@ -1,7 +1,7 @@
 import * as spec from '@jsii/spec';
 import * as Case from 'case';
 import * as reflect from 'jsii-reflect';
-import { Failure, failure, isFailure, isSuccess, liftR, mkdict, partition, reasons, Result, success, unwrapR } from '../util';
+import { Failure, failure, isFailure, isSuccess, liftR, mkdict, partition, reasons, Result, unwrap } from '../util';
 import { DeclarativeConstructInfoModel, EnumClassFactory, EnumClassSingleton, IntegrationInfo, MetricInfo, ParameterValue, Type } from './declarative-construct-model';
 
 export interface ExtractConstructInfoOptions {
@@ -93,7 +93,7 @@ class TypeSystemParser {
     const propsTypes = thirdParameter ? this.convertTypeRef(thirdParameter.type) : [];
 
     // The accepted property types that are structs and we can instantiate
-    const constructPropertyTypes = propsTypes.filter(isSuccess).map(unwrapR).filter(isStructType);
+    const constructPropertyTypes = propsTypes.filter(isSuccess).map(unwrap).filter(isStructType);
 
     // If we found structs to begin
     if (propsTypes.length > 0 && constructPropertyTypes.length === 0) {
@@ -166,7 +166,7 @@ class TypeSystemParser {
         continue;
       }
 
-      const parameterTypes = unwrapR(parameterTypesR);
+      const parameterTypes = unwrap(parameterTypesR);
 
       const integrationTargets = parameterTypes[0].filter(isConstructType);
       const integrationOptionsTypes = (parameterTypes[1] ?? []).filter(isStructType);
@@ -233,7 +233,7 @@ class TypeSystemParser {
         continue;
       }
 
-      const parms = unwrapR(parameterTypes);
+      const parms = unwrap(parameterTypes);
       const parameters: ParameterValue[] = m.parameters.map((p, i) => ({
         name: p.name,
         optional: p.optional,
@@ -321,7 +321,7 @@ class TypeSystemParser {
       } else {
         convertibleProps.push({
           name: p.name,
-          types: unwrapR(p.types),
+          types: unwrap(p.types),
           optional: p.optional,
           remarks: p.remarks,
           summary: p.summary,
@@ -357,14 +357,14 @@ class TypeSystemParser {
       const allElementTypes = this.convertTypeRef(typeRef.arrayOfType);
       const elementTypes = unwrapSuccesses(allElementTypes);
       if (elementTypes.length === 0) { return allElementTypes.filter(isFailure); }
-      return [success({ kind: 'array', elementTypes })];
+      return [{ kind: 'array', elementTypes }];
     }
 
     if (typeRef.mapOfType) {
       const allElementTypes = this.convertTypeRef(typeRef.mapOfType);
       const elementTypes = unwrapSuccesses(allElementTypes);
       if (elementTypes.length === 0) { return allElementTypes.filter(isFailure); }
-      return [success({ kind: 'map', elementTypes })];
+      return [{ kind: 'map', elementTypes }];
     }
 
     if (typeRef.unionOfTypes) {
@@ -372,7 +372,7 @@ class TypeSystemParser {
     }
 
     if (typeRef.primitive) {
-      return [success({ kind: 'primitive', primitiveType: typeRef.primitive as spec.PrimitiveType })];
+      return [{ kind: 'primitive', primitiveType: typeRef.primitive as spec.PrimitiveType }];
     }
 
     const complexType = typeRef.type;
@@ -382,32 +382,32 @@ class TypeSystemParser {
     // or it's an interface that extends IConstruct (and then we find the implementing
     // classes)
     if (this.isConstruct(complexType)) {
-      const impls = complexType.allImplementations.map(k => success({ kind: 'construct', constructFqn: k.fqn } as Type));
+      const impls = complexType.allImplementations.map(k => ({ kind: 'construct', constructFqn: k.fqn } as Type));
       if (impls.length > 0) { return impls; }
       return [failure(`no classes inherit from ${complexType.fqn}`)];
     }
     if (this.isConstructInterface(complexType)) {
       const impls = complexType.allImplementations
         .filter(k => this.isConstruct(k))
-        .map(k => success({ kind: 'construct', constructFqn: k.fqn } as Type));
+        .map(k => ({ kind: 'construct', constructFqn: k.fqn } as Type));
       if (impls.length > 0) { return impls; }
       return [failure(`no classes implement ${complexType.fqn}`)];
     }
 
     if (complexType.isDataType()) {
-      return [success({ kind: 'struct', structFqn: complexType.fqn })];
+      return [{ kind: 'struct', structFqn: complexType.fqn }];
     }
 
     if (complexType.isClassType() && this.isEnumClass(complexType)) {
-      return [success({ kind: 'enum-class', enumClassFqn: complexType.fqn })];
+      return [{ kind: 'enum-class', enumClassFqn: complexType.fqn }];
     }
 
     if (complexType.isInterfaceType() && !complexType.isDataType() && this.hasEnumClassImplementors(complexType)) {
-      return [success({ kind: 'enum-class', enumClassFqn: complexType.fqn })];
+      return [{ kind: 'enum-class', enumClassFqn: complexType.fqn }];
     }
 
     if (complexType.isEnumType()) {
-      return [success({ kind: 'enum', enumFqn: complexType.fqn })];
+      return [{ kind: 'enum', enumFqn: complexType.fqn }];
     }
 
     return [failure(`Cannot represent type ${typeRef}`)];
@@ -510,7 +510,7 @@ class TypeSystemParser {
    * - If the set ends up empty, don't emit diagnostics and return a failure for the types we removed.
    */
   private removeInvalidTypeRefs(xs: Type[] | undefined): Result<void> {
-    if (!xs) { return success(undefined); }
+    if (!xs) { return undefined; }
 
     const fails = new Array<Failure>();
     let i = 0;
@@ -528,7 +528,7 @@ class TypeSystemParser {
       return failure(fails.map(f => f.reason).join(', '));
     }
 
-    return success(undefined);
+    return undefined;
   }
 
   private checkTypeRef(x: Type): Result<void> {
@@ -549,7 +549,7 @@ class TypeSystemParser {
         }
         break;
     }
-    return success(undefined);
+    return undefined;
   }
 
   private emitDiagnostic(d: Diagnostic) {
@@ -614,7 +614,7 @@ function submoduleFqn(fqn: string) {
 }
 
 function unwrapSuccesses<A>(xs: Result<A>[]): A[] {
-  return xs.filter(isSuccess).map(unwrapR);
+  return xs.filter(isSuccess).map(unwrap);
 }
 
 function isClassType(x: reflect.Type): x is reflect.ClassType {

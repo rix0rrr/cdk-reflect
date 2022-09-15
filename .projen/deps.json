@@ -92,11 +92,19 @@
       "type": "runtime"
     },
     {
+      "name": "case",
+      "type": "runtime"
+    },
+    {
       "name": "fs-extra",
       "type": "runtime"
     },
     {
       "name": "jsii-reflect",
+      "type": "runtime"
+    },
+    {
+      "name": "pure-rand",
       "type": "runtime"
     },
     {
