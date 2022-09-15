@@ -6,12 +6,14 @@ import { parseValueSources } from './construction/extract-distribution';
 import { ValueGenerator } from './construction/generate';
 import { ValueMutator } from './construction/mutate';
 import { Random } from './construction/random';
-import { discretize, printStatement } from './construction/statements';
+import { discretize, printStatement, Statement } from './construction/statements';
 import { Value } from './construction/values';
+import { Histogram } from './histogram';
 import { timed } from './util';
 
 async function main() {
   await yargs
+    .option('verbose', { alias: 'v', type: 'count', description: 'Increase verbosity' })
     .command('extract <ASSEMBLY..>', 'Extract builder model', cmdargs => cmdargs
       .option('output', {
         alias: 'o',
@@ -72,30 +74,60 @@ async function main() {
       console.error('Reading model');
       const model = await fs.readJson(args.input);
       const random = Random.mersenneFromSeed(args.seed);
+      const results = new Histogram<string>();
 
       console.error('Generating minimal value');
       const gen = new ValueGenerator(model, random, {
         customDistributions: AWS_CUSTOM_DISTRIBUTIONS,
       });
       let value = gen.minimal(args.FQN!);
-      printAndSynth(value, args.synth);
+      printAndSynth(value, args.verbose, args.synth);
 
       const [seconds] = timed(() => {
         for (let i = 0; i < args.variants; i++) {
-          console.log('--------------------------------------');
+          if (args.verbose > 0) {
+            console.log('--------------------------------------');
+          }
+
           const mutator = new ValueMutator(model, random, {
             variants: 1,
             customDistributions: AWS_CUSTOM_DISTRIBUTIONS,
           });
 
-          value = mutator.mutate(value)[0];
+          const proposedValue = mutator.mutate(value)[0];
           if (!value) {
             console.log('Could not find any more mutations');
             break;
           }
-          printAndSynth(value, args.synth);
+
+          try {
+            printAndSynth(proposedValue, args.verbose, args.synth);
+
+            // Only take this value for further exploration on successful synth
+            results.add('<success>');
+            value = proposedValue;
+          } catch (e: any) {
+            results.add(e.message.replace(/\n/g, '; '));
+            if (args.verbose > 0) {
+              console.log(e.message);
+            } else {
+              printFlush('x');
+            }
+          }
         }
       });
+
+      if (args.verbose === 0) {
+        printFlush('\n');
+      }
+
+      if (args.synth) {
+        // Print the final program
+        console.log('Most recent successfully synthed program:');
+        printProgram(discretize(value));
+
+        console.log(results.print(5));
+      }
 
       console.log(`${seconds.toFixed(1)}s, ${(args.variants / seconds).toFixed(2)} mutations/s`);
     })
@@ -143,25 +175,36 @@ function mkpad(n: number) {
 }
 */
 
-function printAndSynth(value: Value, synth: boolean) {
-  // console.log(JSON.stringify(value, undefined, 2));
-  const plan = discretize(value);
+function printAndSynth(value: Value, verbose: number, synth: boolean) {
+  let program = discretize(value);
 
-  if (synth) {
-    const synther = new Evaluator({
-      printStatements: true,
-    });
-    const template = synther.synth(discretize(value));
-    console.log(JSON.stringify(template, undefined, 2));
-  } else {
-    // Just print the discretized versions
-    for (const statement of plan) {
-      console.log(printStatement(statement));
-    }
+  if (verbose > 0) {
+    printProgram(program);
   }
+  if (synth) {
+    synthProgram(program);
+  }
+  if (verbose === 0) {
+    printFlush('.');
+  }
+}
+
+function printProgram(program: Statement[]) {
+  for (const statement of program) {
+    console.log(printStatement(statement));
+  }
+}
+
+function synthProgram(program: Statement[]): any {
+  const synther = new Evaluator();
+  return synther.synth(program);
 }
 
 main().catch(e => {
   console.error(e);
   process.exitCode = 1;
 });
+
+function printFlush(x: string) {
+  process.stdout.write(x);
+}

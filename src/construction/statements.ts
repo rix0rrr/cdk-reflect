@@ -6,6 +6,8 @@ export type Statement =
   | Expression
   ;
 
+export type Program = Statement[];
+
 export interface Assignment {
   readonly type: 'assignment';
   readonly variableName: string;

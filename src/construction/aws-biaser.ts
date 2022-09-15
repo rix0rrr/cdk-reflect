@@ -4,7 +4,8 @@ import { ICustomDistribution } from './custom-distribution';
 import { DistributionOps } from './distribution-ops';
 import { ParameterSource, FqnSource, ValueModel, DistributionRef } from './distributions';
 import { isSingleton, isString, stringPrim } from './value-helpers';
-import { isCallableValue } from './values';
+import { Zipper } from './value-zipper';
+import { DistPtr, isCallableValue } from './values';
 
 /**
  * A biaser that will try to do well for AWS CDK queries
@@ -23,7 +24,7 @@ export class AwsBiaser implements ISourceBiaser {
 
         source = {
           ...source,
-          parameters: parameters.map(p => this.biasParameter(p, ops, parameters)),
+          parameters: parameters.map((p, i) => this.biasParameter(p, i, ops, parameters)),
         };
         break;
       case 'value-object':
@@ -38,7 +39,7 @@ export class AwsBiaser implements ISourceBiaser {
     return source;
   }
 
-  private biasParameter(p: ParameterSource, ops: DistributionOps, ps: ParameterSource[]): ParameterSource {
+  private biasParameter(p: ParameterSource, i: number, ops: DistributionOps, ps: ParameterSource[]): ParameterSource {
     if (isScopeParameter(p, ops)) {
       return {
         name: p.name,
@@ -46,7 +47,7 @@ export class AwsBiaser implements ISourceBiaser {
       };
     }
 
-    if (isStringParameter(p, ops) && isScopeParameter(ps[0], ops)) {
+    if (i == 1 && isStringParameter(p, ops) && isScopeParameter(ps[0], ops)) {
       // If this a string that goes with a scope
       return {
         name: p.name,
@@ -87,14 +88,20 @@ export const AWS_CUSTOM_DISTRIBUTIONS: Record<string, ICustomDistribution> = {
     mutate() {
     },
   },
-  constructId: {
-    minimalValue(distPtr, zipper) {
+  constructId: new class implements ICustomDistribution {
+    private readonly constructCounter = new Map<string, number>();
+
+    public minimalValue(distPtr: DistPtr, zipper: Zipper) {
       const id = isCallableValue(zipper[0].ptr) ? `My${classNameFromFqn(zipper[0].ptr.fqn)}` : 'MyConstruct';
-      return stringPrim(id, distPtr);
-    },
-    mutate() {
-    },
-  },
+      const ctr = this.constructCounter.get(id);
+      this.constructCounter.set(id, (ctr ?? 1) + 1);
+
+      return stringPrim(`${id}${ctr ?? ''}`, distPtr);
+    }
+
+    public mutate() {
+    }
+  }(),
   arn: {
     minimalValue(distPtr) {
       return stringPrim('arn:aws:service:region:account-id:resource-type/resource-id', distPtr);
