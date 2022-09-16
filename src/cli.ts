@@ -1,3 +1,4 @@
+import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as yargs from 'yargs';
 import { AwsBiaser, AWS_CUSTOM_DISTRIBUTIONS } from './construction/aws-biaser';
@@ -9,24 +10,30 @@ import { Random } from './construction/random';
 import { discretize, printStatement, Statement } from './construction/statements';
 import { Value } from './construction/values';
 import { Histogram } from './histogram';
-import { timed } from './util';
+import { hashJsonObject, timed } from './util';
 
 async function main() {
   await yargs
     .option('verbose', { alias: 'v', type: 'count', description: 'Increase verbosity' })
+
+    //----------------------------------------------------------------------
+    //
+    //  Extract
+    //
+    //----------------------------------------------------------------------
     .command('extract <ASSEMBLY..>', 'Extract builder model', cmdargs => cmdargs
-      .option('output', {
-        alias: 'o',
-        type: 'string',
-        describe: 'Where to write the extracted model',
-        requiresArg: true,
-      })
       .positional('ASSEMBLY', {
         type: 'string',
         array: true,
         required: true,
       })
-      .demandOption('output'),
+      .option('output', {
+        alias: 'o',
+        type: 'string',
+        describe: 'Where to write the extracted model',
+        requiresArg: true,
+        demandOption: true,
+      }),
     async (args) => {
       const assemblyDirs = (args.ASSEMBLY ?? []).map(x => `${x}`);
 
@@ -37,23 +44,23 @@ async function main() {
 
       await fs.writeJson(args.output, result.model, { spaces: 2, encoding: 'utf-8' });
     })
-    .command('plan <FQN>', 'Plan to build a specific type', cmdargs => cmdargs
+    .command('explore <FQN>', 'Explore the program space to build a specific type', cmdargs => cmdargs
       .positional('FQN', {
         type: 'string',
         describe: 'FQN to plan',
         required: true,
       })
-      .option('input', {
-        alias: 'i',
+      .option('model', {
+        alias: 'm',
         type: 'string',
         describe: 'The extracted model',
         requiresArg: true,
+        demandOption: true,
       })
-      .demandOption('input')
       .option('synth', {
         alias: 's',
         type: 'boolean',
-        describe: 'Synthesize the planned type',
+        describe: 'Synthesize the planned values, keeping only successfully synthesizing values',
         requiresArg: false,
         default: false,
       })
@@ -61,6 +68,12 @@ async function main() {
         alias: 'S',
         type: 'number',
         describe: 'PRNG seed',
+        requiresArg: true,
+      })
+      .option('output', {
+        alias: 'o',
+        type: 'string',
+        describe: 'Directory to write successfully synthesizing values',
         requiresArg: true,
       })
       .option('variants', {
@@ -72,7 +85,7 @@ async function main() {
       }),
     async (args) => {
       console.error('Reading model');
-      const model = await fs.readJson(args.input);
+      const model = await fs.readJson(args.model);
       const random = Random.mersenneFromSeed(args.seed);
       const results = new Histogram<string>();
 
@@ -81,9 +94,12 @@ async function main() {
         customDistributions: AWS_CUSTOM_DISTRIBUTIONS,
       });
       let value = gen.minimal(args.FQN!);
-      printAndSynth(value, args.verbose, args.synth);
+      await printAndSynth(value, args.verbose, args.synth);
+      if (args.output) {
+        await saveValue(args.output, value);
+      }
 
-      const [seconds] = timed(() => {
+      const [seconds] = await timed(async () => {
         for (let i = 0; i < args.variants; i++) {
           if (args.verbose > 0) {
             console.log('--------------------------------------');
@@ -101,10 +117,13 @@ async function main() {
           }
 
           try {
-            printAndSynth(proposedValue, args.verbose, args.synth);
+            await printAndSynth(proposedValue, args.verbose, args.synth);
+            results.add('<success>');
+            if (args.output) {
+              await saveValue(args.output, value);
+            }
 
             // Only take this value for further exploration on successful synth
-            results.add('<success>');
             value = proposedValue;
           } catch (e: any) {
             results.add(e.message.replace(/\n/g, '; '));
@@ -130,6 +149,28 @@ async function main() {
       }
 
       console.log(`${seconds.toFixed(1)}s, ${(args.variants / seconds).toFixed(2)} mutations/s`);
+    })
+
+    //----------------------------------------------------------------------
+    //
+    //  Synth
+    //
+    //----------------------------------------------------------------------
+    .command('synth <FILE..>', 'Synthesize the given saved programs', cmdargs => cmdargs
+      .positional('FILE', {
+        type: 'string',
+        array: true,
+        required: true,
+      }),
+    async (args) => {
+      for (const file of args.FILE ?? []) {
+        const value: Value = await fs.readJson(file);
+
+        const template = await printAndSynth(value, args.verbose, true);
+        if (args.verbose >= 2) {
+          console.log(JSON.stringify(template, undefined, 2));
+        }
+      }
     })
     .help()
     .strictOptions()
@@ -175,18 +216,26 @@ function mkpad(n: number) {
 }
 */
 
-function printAndSynth(value: Value, verbose: number, synth: boolean) {
+async function saveValue(directory: string, value: Value) {
+  await fs.mkdirp(directory);
+  const fname = path.join(directory, `${hashJsonObject(value, 32)}.json`);
+  await fs.writeJson(fname, value, { spaces: 2 });
+}
+
+async function printAndSynth(value: Value, verbose: number, synth: boolean) {
   let program = discretize(value);
+  let template;
 
   if (verbose > 0) {
     printProgram(program);
   }
   if (synth) {
-    synthProgram(program);
+    template = synthProgram(program);
   }
   if (verbose === 0) {
     printFlush('.');
   }
+  return template;
 }
 
 function printProgram(program: Statement[]) {

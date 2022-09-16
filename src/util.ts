@@ -1,3 +1,5 @@
+import * as crypto from 'crypto';
+
 export function isDefined<A>(x: A): x is NonNullable<A> {
   return x != null;
 }
@@ -118,10 +120,16 @@ export function enumerate<A>(xs: A[]): Array<[A, number]> {
 /**
  * Runs a block and returns the result plus the time it took, in seconds
  */
-export function timed<A>(block: () => A): [number, A] {
+export async function timed<A>(block: () => Promise<A>): Promise<[number, A]> {
   const startTime = Date.now();
-  const ret = block();
+  const ret = await block();
   const endTime = Date.now();
 
   return [(endTime - startTime) / 1000, ret];
+}
+
+export function hashJsonObject(d: any, length: number): string {
+  const h = crypto.createHash('sha256');
+  h.update(JSON.stringify(d));
+  return h.digest('hex').substring(0, length);
 }

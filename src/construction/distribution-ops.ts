@@ -1,5 +1,4 @@
-import * as crypto from 'crypto';
-import { failure, Result, unwrapOr } from '../util';
+import { failure, hashJsonObject, Result, unwrapOr } from '../util';
 import { DistributionRef, FqnSource, ResolvedValueDistribution, ValueDistribution, ValueModel } from './distributions';
 
 export class DistributionOps {
@@ -57,9 +56,7 @@ export class DistributionOps {
   }
 
   private hashValueDistribution(d: ValueDistribution): string {
-    const h = crypto.createHash('sha256');
-    h.update(JSON.stringify(d));
-    return h.digest('hex').substring(0, HASH_LENGTH);
+    return hashJsonObject(d, HASH_LENGTH);
   }
 }
 

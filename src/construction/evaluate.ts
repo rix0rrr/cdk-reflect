@@ -1,4 +1,5 @@
 import { App, Stack } from 'aws-cdk-lib';
+import * as fs from 'fs-extra';
 import { assertSwitchIsExhaustive } from '../util';
 import { printStatement, Statement } from './statements';
 import { Value } from './values';
@@ -21,7 +22,7 @@ export class Evaluator {
   constructor(private readonly options: EvaluatorOptions = {}) {
   }
 
-  public synth(plan: Statement[]): any {
+  public async synth(plan: Statement[]): Promise<any> {
     for (const stmt of plan) {
       if (this.options.printStatements) {
         console.log(printStatement(stmt));
@@ -31,7 +32,11 @@ export class Evaluator {
 
     const asm = this.app.synth();
     const artifact = asm.getStackByName(this.stack.stackName);
-    return artifact.template;
+    const template = artifact.template;
+
+    await fs.rm(asm.directory, { recursive: true });
+
+    return template;
   }
 
   private evaluateStatement(s: Statement): Value {
@@ -93,18 +98,25 @@ export class Evaluator {
   }
 }
 
-function resolveType(fqn: string): any {
-  const parts = fqn.split('.');
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  let ret = require(parts[0]);
-  parts.shift();
+const SYMBOL_CACHE = new Map<string, any>();
 
-  let name = parts.shift();
-  while (name) {
-    ret = ret[name];
-    name = parts.shift();
+function resolveType(fqn: string): any {
+  const existing = SYMBOL_CACHE.get(fqn);
+  if (existing) { return existing; }
+
+  let ret;
+  const rightMostPeriod = fqn.lastIndexOf('.');
+  if (rightMostPeriod === -1) {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    ret = require(fqn);
+  } else {
+    const parentFqn = fqn.substring(0, rightMostPeriod);
+    const attr = fqn.substring(rightMostPeriod + 1);
+
+    ret = resolveType(parentFqn)[attr];
   }
 
+  SYMBOL_CACHE.set(fqn, ret);
   return ret;
 }
 
